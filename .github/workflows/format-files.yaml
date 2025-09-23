@@ -1,0 +1,33 @@
+name: Autoformat PHP files
+
+on:
+  push:
+    branches: ["*"]
+    paths:
+      - "**.php"
+  pull_request:
+    paths:
+      - "**.php"
+
+jobs:
+  autoformat:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v25
+
+      - name: Run PHP-CS-Fixer
+        run: |
+          nix run nixpkgs#php84Packages.php-cs-fixer  -- fix .
+
+      - name: Push Back Changes
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "format: format files"
