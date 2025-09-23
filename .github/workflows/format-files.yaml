@@ -6,8 +6,6 @@ on:
     paths:
       - "**.php"
   pull_request:
-    paths:
-      - "**.php"
 
 jobs:
   autoformat:
@@ -25,7 +23,7 @@ jobs:
 
       - name: Run PHP-CS-Fixer
         run: |
-          nix run nixpkgs#php84Packages.php-cs-fixer  -- fix .
+          nix run nixpkgs#php84Packages.php-cs-fixer -- fix .
 
       - name: Push Back Changes
         uses: stefanzweifel/git-auto-commit-action@v6
