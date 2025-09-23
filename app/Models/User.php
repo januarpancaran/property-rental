@@ -65,6 +65,12 @@ class User extends Authenticatable
         return $this->status === 'active';
     }
 
+    // Scope to get active users
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
     // Relationship with property
     public function properties()
     {
@@ -81,9 +87,14 @@ class User extends Authenticatable
         return $this->hasMany(Property::class)->where('status', 'rented');
     }
 
-    // Scope to get active users
-    public function scopeActive($query)
+    // Relationship with booking
+    public function bookings()
     {
-        return $query->where('status', 'active');
+        return $this->hasMany(Booking::class, 'user_id');
+    }
+
+    public function activeBookings()
+    {
+        return $this->hasMany(Booking::class, 'user_id')->confirmed();
     }
 }
