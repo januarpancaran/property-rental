@@ -2,10 +2,10 @@ name: Autoformat PHP files
 
 on:
   push:
-    branches: ["*"]
+    branches:
+      - main
     paths:
       - "**.php"
-  pull_request:
 
 jobs:
   autoformat:
