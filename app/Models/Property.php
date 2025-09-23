@@ -30,6 +30,7 @@ class Property extends Model
         'area_sqm' => 'decimal:2',
     ];
 
+    // Relationsihp to users
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -39,6 +40,22 @@ class Property extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Relationship to availability_calendars
+    public function availabilityCalendar()
+    {
+        return $this->hasMany(AvailabilityCalendar::class);
+    }
+
+    public function availableDates()
+    {
+        return $this->hasMany(AvailabilityCalendar::class)->where('status', 'available');
+    }
+
+    public function isAvailableForDates($startDate, $endDate)
+    {
+        return $this->AvailabilityCalendar::isDateRangeAvailable($this->id, $startDate, $endDate);
     }
 
     // Scope for filtering
