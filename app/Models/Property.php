@@ -42,10 +42,26 @@ class Property extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relationship to availability_calendars
+    // Relationship with availability_calendars
     public function availabilityCalendar()
     {
         return $this->hasMany(AvailabilityCalendar::class);
+    }
+
+    // Relationship with booking
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function confirmedBookings()
+    {
+        return $this->hasMany(Booking::class)->confirmed();
+    }
+
+    public function pendingBookings()
+    {
+        return $this->hasMany(Booking::class)->pending();
     }
 
     public function availableDates()
