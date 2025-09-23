@@ -59,11 +59,29 @@ class User extends Authenticatable
         return $this->first_name . ' ' . $this->last_name;
     }
 
+    // Get user status
     public function isActive(): bool
     {
         return $this->status === 'active';
     }
 
+    // Relationship with property
+    public function properties()
+    {
+        return $this->hasMany(Property::class);
+    }
+
+    public function availableProperties()
+    {
+        return $this->hasMany(Property::class)->where('status', 'available');
+    }
+
+    public function rentedProperties()
+    {
+        return $this->hasMany(Property::class)->where('status', 'rented');
+    }
+
+    // Scope to get active users
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
