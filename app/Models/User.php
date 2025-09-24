@@ -171,4 +171,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Contract::class, 'user_id')->current();
     }
+
+    // Relationsip with maintenance
+    public function maintenances()
+    {
+        return $this->hasMany(Maintenance::class, 'user_id');
+    }
+
+    public function pendingMaintenances()
+    {
+        return $this->hasMany(Maintenance::class, 'user_id')->pending();
+    }
 }
