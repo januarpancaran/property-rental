@@ -90,6 +90,22 @@ class Property extends Model
         return $this->AvailabilityCalendar::isDateRangeAvailable($this->id, $startDate, $endDate);
     }
 
+    // Relationshiop with contract
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
+
+    public function activeContracts()
+    {
+        return $this->hasMany(Contract::class)->active();
+    }
+
+    public function currentContract()
+    {
+        return $this->hasOne(Contract::class)->current();
+    }
+
     // Scope for filtering
     public function scopeAvailable($query)
     {
