@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -26,7 +27,8 @@ class User extends Authenticatable
         'password',
         'date_of_birth',
         'occupation',
-        'status'
+        'status',
+        'role_id'
     ];
 
     /**
@@ -69,6 +71,32 @@ class User extends Authenticatable
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
+    }
+
+    // Relationship with role
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function getRoleName(): string
+    {
+        return $this->role?->name ?? 'No Role';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role?->name === 'admin';
+    }
+
+    public function isLandlord(): bool
+    {
+        return $this->role?->name === 'landlord';
+    }
+
+    public function isTenant(): bool
+    {
+        return $this->role?->name === 'tenant';
     }
 
     // Relationship with property
