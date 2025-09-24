@@ -42,6 +42,22 @@ class Property extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    // Relationship with property photos
+    public function photos()
+    {
+        return $this->hasMany(PropertyPhoto::class);
+    }
+
+    public function featuredPhoto()
+    {
+        return $this->hasOne(PropertyPhoto::class)->where('is_featured', true);
+    }
+
+    public function firstPhoto()
+    {
+        return $this->hasOne(PropertyPhoto::class)->orderBy('sort_order')->orderBy('id');
+    }
+
     // Relationship with availability_calendars
     public function availabilityCalendar()
     {
