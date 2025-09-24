@@ -8,7 +8,7 @@ Follow these steps to run this project locally:
 
 - PHP >= v8.2
 - Composer
-- Node.js >= v22.20.0
+- Node.js >= v18.0
 - MySQL
 
 ### Installation steps
