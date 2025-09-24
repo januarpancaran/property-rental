@@ -45,6 +45,12 @@ class Booking extends Model
         return $this->property->user();
     }
 
+    // Relationship with contract
+    public function contract()
+    {
+        return $this->hasOne(Contract::class);
+    }
+
     // Scopes
     public function scopePending($query)
     {
