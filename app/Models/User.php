@@ -97,4 +97,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class, 'user_id')->confirmed();
     }
+
+    // Relationship with contract
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class, 'user_id');
+    }
+
+    public function activeContracts()
+    {
+        return $this->hasMany(Contract::class, 'user_id')->active();
+    }
+
+    public function currentContracts()
+    {
+        return $this->hasMany(Contract::class, 'user_id')->current();
+    }
 }
