@@ -106,6 +106,22 @@ class Property extends Model
         return $this->hasOne(Contract::class)->current();
     }
 
+    // Relationship with maintenance
+    public function maintenances()
+    {
+        return $this->hasMany(Maintenance::class);
+    }
+
+    public function pendingMaintenances()
+    {
+        return $this->hasMany(Maintenance::class)->pending();
+    }
+
+    public function urgentMaintenances()
+    {
+        return $this->hasMany(Maintenance::class)->urgent();
+    }
+
     // Scope for filtering
     public function scopeAvailable($query)
     {
