@@ -48,7 +48,7 @@ DB_PASSWORD=
 5. Run migrations
 
 ```bash
-php artisan migrate
+php artisan migrate:fresh --seed
 ```
 
 6. Start development server
@@ -56,6 +56,9 @@ php artisan migrate
 ```bash
 npm run dev
 php artisan serve
+
+# Or run both at the same time
+npx concurrently "npm run dev" "php artisan serve"
 ```
 
 Your app should be running at `https://localhost:8000`
