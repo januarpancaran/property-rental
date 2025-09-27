@@ -18,7 +18,7 @@ class CheckPermission
         // Check if user is authenticated
         if (! auth()->check()) {
             return redirect()->route('login');
-        } 
+        }
 
         $user = auth()->user();
 
