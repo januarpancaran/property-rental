@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PropertyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,6 +16,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Property management routes
+Route::middleware(['auth', 'permission:view_all_properties'])->group(function () {
+    Route::get('/properties', [PropertyController::class, 'index']);
+});
+
+Route::middleware(['auth', 'permission:manage_properties'])->group(function () {
+    Route::get('/admin/properties', [PropertyController::class, 'adminIndex']);
+});
+
+Route::middleware(['auth', 'permission:create_property'])->group(function () {
+    Route::get('/properties/create', [PropertyController::class, 'create']);
 });
 
 require __DIR__.'/auth.php';
