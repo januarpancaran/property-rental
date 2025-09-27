@@ -10,7 +10,7 @@ class PropertyController extends Controller
     /**
      * Display listing of all properties (public view)
      */
-    public function index() 
+    public function index()
     {
         return response()->json(['message' => 'You can view available properties']);
     }
@@ -18,7 +18,7 @@ class PropertyController extends Controller
     /**
      * Display properties for admin (all properties)
      */
-    public function adminIndex() 
+    public function adminIndex()
     {
         return response()->json(['message' => 'You can view all properties']);
     }
