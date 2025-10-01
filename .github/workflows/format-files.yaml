@@ -1,9 +1,10 @@
-name: Autoformat PHP files
+name: Autoformat files
 
 on:
   pull_request:
     paths:
       - "**.php"
+      - "**.blade.php"
 
 jobs:
   autoformat:
@@ -24,6 +25,10 @@ jobs:
       - name: Run PHP-CS-Fixer
         run: |
           nix run nixpkgs#php84Packages.php-cs-fixer -- fix .
+
+      - name: Run Blade Formatter
+        run: |
+          nix run nixpkgs#blade-formatter -- --write .
 
       - name: Push Back Changes
         uses: stefanzweifel/git-auto-commit-action@v6
