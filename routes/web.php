@@ -20,9 +20,11 @@ Route::middleware('auth')->group(function () {
 });
 
 // Role routes
-Route::middleware(['auth', 'permission:manage_roles_permissions'])->group(function () {
-    Route::resource('/admin/roles', RoleController::class);
-});
+Route::middleware(['auth', 'permission:manage_roles_permissions'])
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('/admin/roles', RoleController::class);
+    });
 
 // Admin property management routes
 Route::middleware(['auth', 'permission:manage_properties'])->group(function () {

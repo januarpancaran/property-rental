@@ -29,7 +29,7 @@
                     @endif
 
                     @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                        <x-nav-link :href="route('roles.index')" :active="request()->routeIs('roles.*')">
+                        <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
                             {{ __('Roles') }}
                         </x-nav-link>
                     @endif
@@ -104,7 +104,7 @@
             </x-responsive-nav-link>
 
             @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                <x-responsive-nav-link :href="route('roles.index')" :active="request()->routeIs('roles.*')">
+                <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('roles.*')">
                     {{ __('Roles') }}
                 </x-responsive-nav-link>
             @endif

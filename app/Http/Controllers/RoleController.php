@@ -14,7 +14,7 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::with('permissions')->paginate(10);
-        return view('roles.index', compact('roles'));
+        return view('admin.roles.index', compact('roles'));
     }
 
     /**
@@ -23,7 +23,7 @@ class RoleController extends Controller
     public function create()
     {
         $permissions = Permission::all();
-        return view('roles.create', compact('permissions'));
+        return view('admin.roles.create', compact('permissions'));
     }
 
     /**
@@ -49,7 +49,7 @@ class RoleController extends Controller
             $role->permissions()->attach($permissions);
         }
 
-        return redirect()->route('roles.index')->with('success', 'Role created successfully!');
+        return redirect()->route('admin.roles.index')->with('success', 'Role created successfully!');
     }
 
     /**
@@ -58,7 +58,7 @@ class RoleController extends Controller
     public function show(Role $role)
     {
         $role->load('permissions', 'users');
-        return view('roles.show', compact('role'));
+        return view('admin.roles.show', compact('role'));
     }
 
     /**
@@ -68,7 +68,7 @@ class RoleController extends Controller
     {
         $permissions = Permission::all();
         $role->load('permissions');
-        return view('roles.edit', compact('role', 'permissions'));
+        return view('admin.roles.edit', compact('role', 'permissions'));
     }
 
     /**
@@ -91,7 +91,7 @@ class RoleController extends Controller
         $role->update($validated);
         $role->permissions()->sync($permissions);
 
-        return redirect()->route('roles.index')->with('success', 'Role updated successfully!');
+        return redirect()->route('admin.roles.index')->with('success', 'Role updated successfully!');
     }
 
     /**
@@ -100,12 +100,12 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         if ($role->users()->exists()) {
-            return redirect()->route('roles.index')->with('error', 'Cannot delete role with existing users.');
+            return redirect()->route('admin.roles.index')->with('error', 'Cannot delete role with existing users.');
         }
 
         $role->permissions()->detach();
         $role->delete();
 
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully!');
+        return redirect()->route('admin.roles.index')->with('success', 'Role deleted successfully!');
     }
 }
