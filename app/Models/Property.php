@@ -17,7 +17,7 @@ class Property extends Model
         'city',
         'state',
         'postal_code',
-        'poperty_type',
+        'property_type',
         'rent_amount',
         'bedrooms',
         'bathrooms',
