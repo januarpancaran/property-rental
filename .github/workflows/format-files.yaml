@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Blade Formatter
         run: |
-          nix run nixpkgs#blade-formatter -- --write .
+          nix run nixpkgs#blade-formatter -- --write "**/*.blade.php"
 
       - name: Push Back Changes
         uses: stefanzweifel/git-auto-commit-action@v6
