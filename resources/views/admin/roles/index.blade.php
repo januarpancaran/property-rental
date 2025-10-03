@@ -6,7 +6,7 @@
             </h2>
 
             @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                <a href="{{ route('roles.create') }}"
+                <a href="{{ route('admin.roles.create') }}"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Add New Role
                 </a>
@@ -83,12 +83,12 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                                                    <a href="{{ route('roles.show', $role) }}"
+                                                    <a href="{{ route('admin.roles.show', $role) }}"
                                                         class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 mr-3">View</a>
-                                                    <a href="{{ route('roles.edit', $role) }}"
+                                                    <a href="{{ route('admin.roles.edit', $role) }}"
                                                         class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3">Edit</a>
-                                                    <form action="{{ route('roles.destroy', $role) }}" method="POST"
-                                                        class="inline"
+                                                    <form action="{{ route('admin.roles.destroy', $role) }}"
+                                                        method="POST" class="inline"
                                                         onsubmit="return confirm('Are you sure you want to delete this role?');">
                                                         @csrf
                                                         @method('DELETE')
@@ -111,7 +111,7 @@
                         <div class="text-center py-8">
                             <p class="text-gray-500 dark:text-gray-400">No roles found.</p>
                             @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                                <a href="{{ route('roles.create') }}"
+                                <a href="{{ route('admin.roles.create') }}"
                                     class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">Create
                                     your first role</a>
                             @endif

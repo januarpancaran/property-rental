@@ -5,7 +5,7 @@
                 Role Details: {{ $role->display_name }}
             </h2>
             @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                <a href="{{ route('roles.edit', $role) }}"
+                <a href="{{ route('admin.roles.edit', $role) }}"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Edit Role
                 </a>
@@ -16,7 +16,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
-                <a href="{{ route('roles.index') }}"
+                <a href="{{ route('admin.roles.index') }}"
                     class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-600">
                     ← Back to Roles
                 </a>
