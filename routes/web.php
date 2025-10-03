@@ -24,17 +24,49 @@ Route::middleware(['auth', 'permission:manage_roles_permissions'])->group(functi
     Route::resource('/admin/roles', RoleController::class);
 });
 
-// Property management routes
-Route::middleware(['auth', 'permission:view_all_properties'])->group(function () {
-    Route::get('/properties', [PropertyController::class, 'index']);
-});
-
+// Admin property management routes
 Route::middleware(['auth', 'permission:manage_properties'])->group(function () {
-    Route::get('/admin/properties', [PropertyController::class, 'adminIndex']);
+    Route::get('/admin/properties', [PropertyController::class, 'adminIndex'])->name('admin.properties.index');
+    Route::delete('/admin/properties/{property}', [PropertyController::class, 'destroy'])->name('admin.properties.destroy');
 });
 
+// Public properties listing
+Route::get('/properties', [PropertyController::class, 'index'])
+    ->middleware('auth')
+    ->name('properties.index');
+
+// Property create
 Route::middleware(['auth', 'permission:create_property'])->group(function () {
-    Route::get('/properties/create', [PropertyController::class, 'create']);
+    Route::get('/landlord/properties', [PropertyController::class, 'myProperties'])->name('landlord.properties.index');
+    Route::get('/landlord/properties/create', [PropertyController::class, 'create'])->name('landlord.properties.create');
+    Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store');
+});
+
+// Property show
+Route::get('/properties/{property}', [PropertyController::class, 'show'])
+    ->middleware('auth')
+    ->name('properties.show');
+
+// Property edit
+Route::middleware(['auth', 'permission:edit_own_property'])->group(function () {
+    Route::get('/landlord/properties/{property}/edit', [PropertyController::class, 'edit'])->name('landlord.properties.edit');
+    Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
+});
+
+Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])
+    ->middleware(['auth', 'permission:delete_property'])
+    ->name('landlord.properties.destroy');
+
+// Property photos
+Route::middleware(['auth', 'permission:upload_property_photos'])->group(function () {
+    Route::delete('/landlord/properties/photos/{photo}', [PropertyController::class, 'deletePhoto'])->name('properties.photos.delete');
+});
+
+// Availability management
+Route::middleware(['auth', 'permission:manage_availability'])->group(function () {
+    Route::get('/landlord/properties/{property}/availability', [PropertyController::class, 'availability'])->name('properties.availability');
+    Route::post('/landlord/properties/{property}/block-dates', [PropertyController::class, 'blockDates'])->name('properties.block-dates');
+    Route::post('/landlord/properties/{property}/set-pricing', [PropertyController::class, 'setPricing'])->name('properties.set-pricing');
 });
 
 require __DIR__ . '/auth.php';

@@ -16,9 +16,27 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    @if (!auth()->user()->isAdmin())
+                        <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.*')">
+                            {{ __('Properties') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if (auth()->user()->isLandlord())
+                        <x-nav-link :href="route('landlord.properties.index')" :active="request()->routeIs('landlord.properties.*')">
+                            {{ __('My Properties') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (auth()->user()->hasPermission('manage_roles_permissions'))
                         <x-nav-link :href="route('roles.index')" :active="request()->routeIs('roles.*')">
                             {{ __('Roles') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if (auth()->user()->hasPermission('manage_properties'))
+                        <x-nav-link :href="route('admin.properties.index')" :active="request()->routeIs('admin.properties.*')">
+                            {{ __('Properties') }}
                         </x-nav-link>
                     @endif
                 </div>
