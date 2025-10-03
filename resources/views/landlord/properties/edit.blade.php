@@ -16,8 +16,8 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form id="update-property-form" action="{{ route('landlord.properties.update', $property) }}" method="POST"
-                        enctype="multipart/form-data">
+                    <form id="update-property-form" action="{{ route('landlord.properties.update', $property) }}"
+                        method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
