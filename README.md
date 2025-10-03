@@ -51,7 +51,13 @@ DB_PASSWORD=
 php artisan migrate:fresh --seed
 ```
 
-6. Start development server
+6. Link storage
+
+```bash
+php artisan storage:link
+```
+
+7. Start development server
 
 ```bash
 npm run dev
