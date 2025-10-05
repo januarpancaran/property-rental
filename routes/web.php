@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,6 +19,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// User routes
+Route::middleware(['auth', 'permission:manage_users_permissions'])
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('/admin/user', UserController::class);
+    });
 
 // Role routes
 Route::middleware(['auth', 'permission:manage_roles_permissions'])

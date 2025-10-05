@@ -187,4 +187,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Maintenance::class, 'user_id')->pending();
     }
+
+    public function getStatusBadgeAttribute()
+    {
+        $badges = [
+            "active" => '<span class="text-xs font-medium px-2.5 py-0.5 rounded
+            bg-green-200 text-green-900
+            dark:bg-green-600 dark:text-green-100">Active</span>',
+
+            "inactive" => '<span class="text-xs font-medium px-2.5 py-0.5 rounded
+            bg-red-200 text-red-900
+            dark:bg-red-600 dark:text-red-100">Inactive</span>',
+        ];
+
+        return $badges[$this->status];
+    }
 }

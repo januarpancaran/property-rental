@@ -28,6 +28,12 @@
                         </x-nav-link>
                     @endif
 
+                    @if (auth()->user()->hasPermission('manage_users_permissions'))
+                        <x-nav-link :href="route('admin.user.index')" :active="request()->routeIs('admin.user.*')">
+                            {{ __('Users') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (auth()->user()->hasPermission('manage_roles_permissions'))
                         <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
                             {{ __('Roles') }}
