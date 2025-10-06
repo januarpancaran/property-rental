@@ -58,10 +58,10 @@ class UserController extends Controller
                 'occupation' => $validatedData['occupation'],
                 'status' => $validatedData['status'],
             ]);
-            
+
             $roleId = $validatedData['role'];
             $role = Role::findOrFail($roleId);
-            $user->update(['role_id' => $roleId]); 
+            $user->update(['role_id' => $roleId]);
 
             return redirect()->route('admin.user.index')
                 ->with('success', 'User ' . $user->first_name . ' ' . $user->last_name . ' berhasil dibuat.');
@@ -89,8 +89,8 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::all();
-        
-        $currentRoleId = $user->role_id ? $user->role_id : null; 
+
+        $currentRoleId = $user->role_id ? $user->role_id : null;
 
         return view('admin.user.edit', compact('user', 'roles', 'currentRoleId'));
     }
@@ -106,7 +106,7 @@ class UserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['required', 'string', 'max:15'],
-            'password' => ['nullable', 'string','confirmed', Password::defaults()], 
+            'password' => ['nullable', 'string','confirmed', Password::defaults()],
             'date_of_birth' => ['required', 'date'],
             'occupation' => ['required', 'string', 'max:255'],
             'status' => ['required', 'string', 'in:active,inactive,pending'],
@@ -132,7 +132,7 @@ class UserController extends Controller
 
             $roleId = $validatedData['role'];
             $role = Role::findOrFail($roleId);
-            $user->update(['role_id' => $roleId]); 
+            $user->update(['role_id' => $roleId]);
 
             return redirect()->route('admin.user.index')
                 ->with('success', 'User ' . $user->first_name . ' ' . $user->last_name . ' berhasil diperbarui.');

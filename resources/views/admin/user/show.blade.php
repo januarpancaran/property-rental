@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                User Details: {{ $user->first_name . " " . $user->last_name }}
+                User Details: {{ $user->first_name . ' ' . $user->last_name }}
             </h2>
             @if (auth()->user()->hasPermission('manage_roles_permissions'))
                 <a href="{{ route('admin.user.edit', $user) }}"
@@ -30,7 +30,8 @@
                             <div class="space-y-3">
                                 <div>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Fullname:</span>
-                                    <p class="font-medium dark:text-gray-100">{{ $user->first_name . " " . $user->last_name }}</p>
+                                    <p class="font-medium dark:text-gray-100">
+                                        {{ $user->first_name . ' ' . $user->last_name }}</p>
                                 </div>
                                 <div>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Email:</span>
@@ -42,9 +43,10 @@
                                 </div>
                                 <div>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Date of Birth:</span>
-                                    <p class="font-medium dark:text-gray-100">{{ $user->date_of_birth->format('d M Y') }}</p>
+                                    <p class="font-medium dark:text-gray-100">
+                                        {{ $user->date_of_birth->format('d M Y') }}</p>
                                 </div>
-                                
+
                             </div>
                         </div>
                         <div>

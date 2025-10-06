@@ -21,7 +21,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="col-span-1">
                                 <label for="first_name"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">First
+                                    Name</label>
                                 <input type="text" name="first_name" id="first_name"
                                     value="{{ old('first_name', $user->first_name) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -59,7 +60,8 @@
 
                             <div class="col-span-1">
                                 <label for="phone"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone
+                                    Number</label>
                                 <input type="tel" name="phone" id="phone"
                                     value="{{ old('phone', $user->phone) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -70,11 +72,14 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 border-t pt-4 border-gray-200 dark:border-gray-700">
-                            <p class="col-span-full text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Update Password (Optional)</p>
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 border-t pt-4 border-gray-200 dark:border-gray-700">
+                            <p class="col-span-full text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Update
+                                Password (Optional)</p>
                             <div class="col-span-1">
                                 <label for="password"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">New
+                                    Password</label>
                                 <input type="password" name="password" id="password"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     placeholder="Leave blank to keep current password">
@@ -85,16 +90,18 @@
 
                             <div class="col-span-1">
                                 <label for="password_confirmation"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm New Password</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm New
+                                    Password</label>
                                 <input type="password" name="password_confirmation" id="password_confirmation"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                         </div>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="col-span-1">
                                 <label for="date_of_birth"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of
+                                    Birth</label>
                                 <input type="date" name="date_of_birth" id="date_of_birth"
                                     value="{{ old('date_of_birth', $user->date_of_birth ? date('Y-m-d', strtotime($user->date_of_birth)) : '') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -126,9 +133,12 @@
                                     required>
                                     <option value="" disabled>Select Status</option>
                                     @php $currentStatus = old('status', $user->status); @endphp
-                                    <option value="active" {{ $currentStatus == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ $currentStatus == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                    <option value="pending" {{ $currentStatus == 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="active" {{ $currentStatus == 'active' ? 'selected' : '' }}>Active
+                                    </option>
+                                    <option value="inactive" {{ $currentStatus == 'inactive' ? 'selected' : '' }}>
+                                        Inactive</option>
+                                    <option value="pending" {{ $currentStatus == 'pending' ? 'selected' : '' }}>Pending
+                                    </option>
                                 </select>
                                 @error('status')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -144,7 +154,8 @@
                                     <option value="" disabled>Select Role</option>
                                     @php $selectedRole = old('role', $currentRoleId); @endphp
                                     @foreach ($roles as $role)
-                                        <option value="{{ $role->id }}" {{ $selectedRole == $role->id ? 'selected' : '' }}>
+                                        <option value="{{ $role->id }}"
+                                            {{ $selectedRole == $role->id ? 'selected' : '' }}>
                                             {{ $role->name }}
                                         </option>
                                     @endforeach

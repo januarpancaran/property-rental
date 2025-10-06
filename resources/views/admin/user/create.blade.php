@@ -19,7 +19,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="col-span-1">
                                 <label for="first_name"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">First
+                                    Name</label>
                                 <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -54,7 +55,8 @@
 
                             <div class="col-span-1">
                                 <label for="phone"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone
+                                    Number</label>
                                 <input type="tel" name="phone" id="phone" value="{{ old('phone') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -78,7 +80,8 @@
 
                             <div class="col-span-1">
                                 <label for="password_confirmation"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm
+                                    Password</label>
                                 <input type="password" name="password_confirmation" id="password_confirmation"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -88,8 +91,10 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="col-span-1">
                                 <label for="date_of_birth"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
-                                <input type="date" name="date_of_birth" id="date_of_birth" value="{{ old('date_of_birth') }}"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of
+                                    Birth</label>
+                                <input type="date" name="date_of_birth" id="date_of_birth"
+                                    value="{{ old('date_of_birth') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
                                 @error('date_of_birth')
@@ -116,9 +121,12 @@
                                 <select name="status" id="status"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="" disabled {{ old('status') == null ? 'selected' : '' }}>Select Status</option>
-                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    <option value="" disabled {{ old('status') == null ? 'selected' : '' }}>
+                                        Select Status</option>
+                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active
+                                    </option>
+                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
+                                        Inactive</option>
                                 </select>
                                 @error('status')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -131,9 +139,11 @@
                                 <select name="role" id="role"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="" disabled {{ old('role') == null ? 'selected' : '' }}>Select Role</option>
+                                    <option value="" disabled {{ old('role') == null ? 'selected' : '' }}>Select
+                                        Role</option>
                                     @foreach ($roles as $role)
-                                        <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>
+                                        <option value="{{ $role->id }}"
+                                            {{ old('role') == $role->id ? 'selected' : '' }}>
                                             {{ $role->name }}
                                         </option>
                                     @endforeach

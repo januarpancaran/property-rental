@@ -74,7 +74,7 @@ class AdminBookingController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             $booking = Booking::create($validatedData);
 
             $endDateForUpdate = date('Y-m-d', strtotime('-1 day', strtotime($validatedData['check_out_date'])));
