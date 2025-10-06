@@ -10,7 +10,7 @@ class AvailabilityCalendar extends Model
 {
     use HasFactory;
 
-    protected $table = 'availability_calendar';
+    protected $table = 'availability_calendars';
 
     protected $fillable = [
         'property_id',
