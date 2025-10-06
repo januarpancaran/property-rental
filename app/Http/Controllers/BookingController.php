@@ -2,105 +2,81 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\Booking;
-use App\Model\Property;
 use Illuminate\Http\Request;
+use App\Models\Booking;
+use App\Models\Property;
 use Illuminate\Support\Facades\Auth;
-
 
 class BookingController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::With(['property','property_owner'])
-        ->where('user_id',auth()->id());
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            $bookings = Booking::with(['user', 'property'])->latest()->get();
+        } elseif ($user->role === 'landlord') {
+            $bookings = Booking::whereHas('property', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->with(['user', 'property'])->latest()->get();
+        } else {
+            $bookings = Booking::where('user_id', $user->id)->with(['property'])->latest()->get();
+        }
+
         return view('bookings.index', compact('bookings'));
-    }
-
-    public function landlordIndex()
-    {
-        $bookings = Booking::with(['property', 'user'])
-            ->whereHas('property', function ($q) {
-                $q->where('owner_id', auth()->id());
-            })
-            ->paginate(10);
-
-        return view('bookings.landlord_index', compact('bookings'));
     }
 
     public function create()
     {
-        return view('bookings.create');
+        $properties = Property::all();
+        return view('bookings.create', compact('properties'));
     }
-    
+
     public function store(Request $request)
     {
-        $validated['user_id'] = Auth::id();
-        $validated = $request->validate([
+        $request->validate([
             'property_id' => 'required|exists:properties,id',
-            'check_in_date' => 'required|date',
-            'check_out_date' => 'required|date|after:start_date'
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
-        $validated['payment_status'] = 'pending';
-        $validated['booking_status'] = 'pending';
 
-        $booking = Booking::create($validated);
+        Booking::create([
+            'user_id' => Auth::id(),
+            'property_id' => $request->property_id,
+            'status' => 'pending',
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+        ]);
+
         return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
     }
 
-    /**
-     * Tenant: Cancel Booking
-     */
-    public function cancel(Booking $booking)
-    {
-        if ($booking->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized');
-        }
-
-        $booking->update(['status' => 'cancelled']);
-
-        return back()->with('success', 'Booking cancelled.');
-    }
-
-    /**
-     * Landlord: Confirm Booking
-     */
     public function confirm(Booking $booking)
     {
-        if ($booking->property->owner_id !== auth()->id()) {
-            abort(403, 'Unauthorized');
+        if (Auth::user()->role === 'landlord' || Auth::user()->role === 'admin') {
+            $booking->update(['status' => 'confirmed']);
         }
-
-        $booking->update(['status' => 'confirmed']);
-
         return back()->with('success', 'Booking confirmed.');
     }
 
-    /**
-     * Landlord: Cancel Booking
-     */
-    public function landlordCancel(Booking $booking)
+    public function cancel(Booking $booking)
     {
-        if ($booking->property->owner_id !== auth()->id()) {
-            abort(403, 'Unauthorized');
+        $user = Auth::user();
+        if (
+            $user->role === 'admin' ||
+            $user->id === $booking->user_id ||
+            ($user->role === 'landlord' && $booking->property->user_id === $user->id)
+        ) {
+            $booking->update(['status' => 'cancelled']);
         }
-
-        $booking->update(['status' => 'cancelled']);
-
-        return back()->with('success', 'Booking cancelled by landlord.');
+        return back()->with('success', 'Booking cancelled.');
     }
 
-    /**
-     * Landlord: Complete Booking
-     */
     public function complete(Booking $booking)
     {
-        if ($booking->property->owner_id !== auth()->id()) {
-            abort(403, 'Unauthorized');
+        if (Auth::user()->role === 'landlord' || Auth::user()->role === 'admin') {
+            $booking->update(['status' => 'completed']);
         }
-
-        $booking->update(['status' => 'completed']);
-
-        return back()->with('success', 'Booking marked as completed.');
+        return back()->with('success', 'Booking completed.');
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -69,6 +70,13 @@ Route::middleware(['auth', 'permission:manage_availability'])->group(function ()
     Route::get('/landlord/properties/{property}/availability', [PropertyController::class, 'availability'])->name('properties.availability');
     Route::post('/landlord/properties/{property}/block-dates', [PropertyController::class, 'blockDates'])->name('properties.block-dates');
     Route::post('/landlord/properties/{property}/set-pricing', [PropertyController::class, 'setPricing'])->name('properties.set-pricing');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('bookings', BookingController::class);
+    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::post('/bookings/{booking}/confirm', [BookingController::class, 'confirm'])->name('bookings.confirm');
+    Route::post('/bookings/{booking}/complete', [BookingController::class, 'complete'])->name('bookings.complete');
 });
 
 require __DIR__ . '/auth.php';

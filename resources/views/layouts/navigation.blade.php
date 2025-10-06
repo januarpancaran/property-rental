@@ -39,6 +39,11 @@
                             {{ __('Properties') }}
                         </x-nav-link>
                     @endif
+                    <!-- Booking Management -->
+                        <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">
+                            {{ __('Booking Management') }}
+                        </x-nav-link>
+
                 </div>
             </div>
 
