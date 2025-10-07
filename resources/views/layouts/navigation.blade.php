@@ -28,6 +28,12 @@
                         </x-nav-link>
                     @endif
 
+                    @if (auth()->user()->hasPermission('manage_users_permissions'))
+                        <x-nav-link :href="route('admin.user.index')" :active="request()->routeIs('admin.user.*')">
+                            {{ __('Users') }}
+                        </x-nav-link>
+                    @endif
+
                     @if (auth()->user()->hasPermission('manage_roles_permissions'))
                         <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
                             {{ __('Roles') }}
@@ -37,6 +43,12 @@
                     @if (auth()->user()->hasPermission('manage_properties'))
                         <x-nav-link :href="route('admin.properties.index')" :active="request()->routeIs('admin.properties.*')">
                             {{ __('Properties') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if (auth()->user()->hasPermission('manage_all_bookings'))
+                        <x-nav-link :href="route('admin.bookings.index')" :active="request()->routeIs('admin.bookings.*')">
+                            {{ __('Bookings') }}
                         </x-nav-link>
                     @endif
                 </div>

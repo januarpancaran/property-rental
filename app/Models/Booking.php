@@ -131,7 +131,15 @@ class Booking extends Model
 
     public function getTotalAmountAttribute()
     {
-        return 'Rp' . number_format($this->total_amount, 0, ',', '.');
+        // Access the raw database value directly
+        $rawAmount = $this->attributes['total_amount'];
+
+        // Check if the raw amount is null before formatting
+        if (is_null($rawAmount)) {
+            return 'Rp 0';
+        }
+
+        return 'Rp' . number_format($rawAmount, 0, ',', '.');
     }
 
     public function calculateTotalAmount()
@@ -148,11 +156,11 @@ class Booking extends Model
             ->where('booking_status', '!=', 'cancelled')
             ->where(function ($q) use ($checkIn, $checkOut) {
                 $q->whereBetween('check_in_date', [$checkIn, $checkOut])
-                  ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
-                  ->orWhere(function ($subQ) use ($checkIn, $checkOut) {
-                      $subQ->where('check_in_date', '<=', $checkIn)
-                         ->where('check_out_date', '>=', $checkOut);
-                  });
+                    ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
+                    ->orWhere(function ($subQ) use ($checkIn, $checkOut) {
+                        $subQ->where('check_in_date', '<=', $checkIn)
+                            ->where('check_out_date', '>=', $checkOut);
+                    });
             });
 
         if ($excludeBookingId) {

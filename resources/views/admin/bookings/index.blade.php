@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Roles Management') }}
+                {{ __('Bookings Management') }}
             </h2>
 
-            @if (auth()->user()->hasPermission('manage_users'))
-                <a href="{{ route('admin.roles.create') }}"
+            @if (auth()->user()->hasPermission('manage_roles_permissions'))
+                <a href="{{ route('admin.bookings.create') }}"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Add New Role
+                    Add New Booking
                 </a>
             @endif
         </div>
@@ -32,26 +32,32 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    @if ($roles->count() > 0)
+                    @if ($bookings->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Name</th>
+                                            Customer</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Display Name</th>
+                                            Property</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Users Count</th>
+                                            Check in Date</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Permissions Count</th>
+                                            Check out Date</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Status</th>
+                                            Total Amount</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Booking Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Payment Status</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Actions</th>
@@ -59,37 +65,49 @@
                                 </thead>
 
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    @foreach ($roles as $role)
+                                    @foreach ($bookings as $booking)
                                         <tr>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                {{ $role->name }}
+                                                {{ $booking->user->first_name . ' ' . $booking->user->last_name }}
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $role->display_name }}
+                                                {{ $booking->property->title }}
+                                            </td>
+                                            {{-- <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {!! $user->status_badge !!}
+                                            </td> --}}
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {{ date('Y-m-d', strtotime($booking->check_in_date)) }}
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $role->users->count() }}
+                                                {{ date('Y-m-d', strtotime($booking->check_out_date)) }}
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $role->permissions->count() }}
+                                                {{ $booking->total_amount }}
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {!! $role->status_badge !!}
+                                                {{ $booking->booking_status }}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {{ $booking->payment_status }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                                                    <a href="{{ route('admin.roles.show', $role) }}"
+                                                    <a href="{{ route('admin.bookings.show', $booking) }}"
                                                         class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 mr-3">View</a>
-                                                    <a href="{{ route('admin.roles.edit', $role) }}"
+                                                    <a href="{{ route('admin.bookings.edit', $booking) }}"
                                                         class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3">Edit</a>
-                                                    <form action="{{ route('admin.roles.destroy', $role) }}"
+                                                    <form action="{{ route('admin.bookings.destroy', $booking) }}"
                                                         method="POST" class="inline"
-                                                        onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                                        onsubmit="return confirm('Are you sure you want to delete this booking?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
@@ -105,15 +123,15 @@
                             </table>
                         </div>
                         <div class="mt-4">
-                            {{ $roles->links() }}
+                            {{ $bookings->links() }}
                         </div>
                     @else
                         <div class="text-center py-8">
-                            <p class="text-gray-500 dark:text-gray-400">No roles found.</p>
-                            @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                                <a href="{{ route('admin.roles.create') }}"
+                            <p class="text-gray-500 dark:text-gray-400">No booking found.</p>
+                            @if (auth()->user()->hasPermission('manage_all_bookings'))
+                                <a href="{{ route('admin.bookings.create') }}"
                                     class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">Create
-                                    your first role</a>
+                                    your first booking</a>
                             @endif
                         </div>
                     @endif

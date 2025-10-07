@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,11 +21,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// User routes
+Route::middleware(['auth', 'permission:manage_users_permissions'])
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('/admin/user', UserController::class);
+    });
+
 // Role routes
 Route::middleware(['auth', 'permission:manage_roles_permissions'])
     ->name('admin.')
     ->group(function () {
         Route::resource('/admin/roles', RoleController::class);
+    });
+
+// Admin Booking routes
+Route::middleware(['auth', 'permission:manage_all_bookings'])
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('/admin/bookings', AdminBookingController::class);
     });
 
 // Admin property management routes
