@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Booking extends Model
 {
@@ -129,17 +128,29 @@ class Booking extends Model
         return $this->check_in_date->diffInDays($this->check_out_date);
     }
 
-    public function getTotalAmountAttribute()
+    // Get nightly rate
+    public function getNightlyRateAttribute()
     {
-        // Access the raw database value directly
+        $nights = $this->nights;
+        return $nights > 0 ? $this->attributes['total_amount'] / $nights : 0;
+    }
+
+    // Get formatted total amount (renamed to avoid conflict)
+    public function getFormattedTotalAmountAttribute()
+    {
         $rawAmount = $this->attributes['total_amount'];
 
-        // Check if the raw amount is null before formatting
         if (is_null($rawAmount)) {
             return 'Rp 0';
         }
 
-        return 'Rp' . number_format($rawAmount, 0, ',', '.');
+        return 'Rp ' . number_format($rawAmount, 0, ',', '.');
+    }
+
+    // Get formatted nightly rate
+    public function getFormattedNightlyRateAttribute()
+    {
+        return 'Rp ' . number_format($this->nightly_rate, 0, ',', '.');
     }
 
     public function calculateTotalAmount()

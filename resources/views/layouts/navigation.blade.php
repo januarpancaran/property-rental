@@ -51,6 +51,12 @@
                             {{ __('Bookings') }}
                         </x-nav-link>
                     @endif
+
+                    @if (auth()->user()->hasPermission('create_booking'))
+                        <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">
+                            {{ __('My Bookings') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
