@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminBookingController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
@@ -85,6 +86,50 @@ Route::middleware(['auth', 'permission:manage_availability'])->group(function ()
     Route::get('/landlord/properties/{property}/availability', [PropertyController::class, 'availability'])->name('properties.availability');
     Route::post('/landlord/properties/{property}/block-dates', [PropertyController::class, 'blockDates'])->name('properties.block-dates');
     Route::post('/landlord/properties/{property}/set-pricing', [PropertyController::class, 'setPricing'])->name('properties.set-pricing');
+});
+
+// Booking Management Routes
+Route::middleware('auth')->group(function () {
+    // Tenant bookings
+    Route::get('/bookings', [BookingController::class, 'index'])
+        ->name('bookings.index');
+
+    Route::get('/bookings/create', [BookingController::class, 'create'])
+        ->middleware('permission:create_booking')
+        ->name('bookings.create');
+
+    Route::post('/bookings', [BookingController::class, 'store'])
+        ->middleware('permission:create_booking')
+        ->name('bookings.store');
+
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])
+        ->name('bookings.show');
+
+    // Booking actions
+    Route::post('/bookings/{booking}/confirm', [BookingController::class, 'confirm'])
+        ->middleware('permission:confirm_booking')
+        ->name('bookings.confirm');
+
+    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])
+        ->name('bookings.cancel');
+
+    Route::post('/bookings/{booking}/complete', [BookingController::class, 'complete'])
+        ->middleware('permission:complete_booking')
+        ->name('bookings.complete');
+
+    // Property bookings (for landlords)
+    Route::get('/properties/{property}/bookings', [BookingController::class, 'propertyBookings'])
+        ->name('properties.bookings');
+
+    // AJAX endpoint for availability check
+    Route::post('/bookings/check-availability', [BookingController::class, 'checkAvailability'])
+        ->name('bookings.check-availability');
+});
+
+// Admin booking management
+Route::middleware(['auth', 'permission:view_all_bookings'])->group(function () {
+    Route::get('/admin/bookings', [BookingController::class, 'adminIndex'])
+        ->name('admin.bookings.index');
 });
 
 require __DIR__ . '/auth.php';

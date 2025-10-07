@@ -59,7 +59,7 @@ class Property extends Model
     }
 
     // Relationship with availability_calendars
-    public function availabilityCalendar()
+    public function availabilityCalendars()
     {
         return $this->hasMany(AvailabilityCalendar::class);
     }
@@ -87,7 +87,7 @@ class Property extends Model
 
     public function isAvailableForDates($startDate, $endDate)
     {
-        return $this->AvailabilityCalendar::isDateRangeAvailable($this->id, $startDate, $endDate);
+        return AvailabilityCalendar::isDateRangeAvailable($this->id, $startDate, $endDate);
     }
 
     // Relationshiop with contract

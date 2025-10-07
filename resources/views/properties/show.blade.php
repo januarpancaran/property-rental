@@ -4,12 +4,20 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Property Details: {{ $property->title }}
             </h2>
-            @if (auth()->user()->hasPermission('edit_own_property') && $property->user_id === auth()->id())
-                <a href="{{ route('landlord.properties.edit', $property) }}"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Edit Property
-                </a>
-            @endif
+            <div class="flex gap-2">
+                @if (auth()->user()->hasPermission('edit_own_property') && $property->user_id === auth()->id())
+                    <a href="{{ route('landlord.properties.edit', $property) }}"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Edit Property
+                    </a>
+                @endif
+                @if (auth()->user()->id === $property->user_id)
+                    <a href="{{ route('properties.bookings', $property) }}"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        View All Bookings
+                    </a>
+                @endif
+            </div>
         </div>
     </x-slot>
 
@@ -150,6 +158,12 @@
                     <div class="p-6">
                         <h3 class="text-lg font-semibold mb-4 dark:text-gray-200">Interested in this property?</h3>
                         <div class="flex gap-4">
+                            @if (auth()->user()->isTenant() && $property->status === 'available')
+                                <a href="{{ route('bookings.create', ['property_id' => $property->id]) }}"
+                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
+                                    Book Now
+                                </a>
+                            @endif
                             <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded">
                                 Contact Owner
                             </button>
@@ -162,7 +176,13 @@
             @if (auth()->user()->id === $property->user_id && $property->bookings->count() > 0)
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-6">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-4 dark:text-gray-200">Recent Bookings</h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold dark:text-gray-200">Recent Bookings</h3>
+                            <a href="{{ route('properties.bookings', $property) }}"
+                                class="text-blue-500 hover:text-blue-700 dark:text-blue-400 text-sm">
+                                View All →
+                            </a>
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
@@ -217,7 +237,7 @@
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                Rp {{ number_format($booking->total_amount, 0, ',', '.') }}
+                                                {{ $booking->formatted_total_amount }}
                                             </td>
                                         </tr>
                                     @endforeach
