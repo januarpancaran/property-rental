@@ -28,7 +28,7 @@
                         </x-nav-link>
                     @endif
 
-                    @if (auth()->user()->hasPermission('manage_users_permissions'))
+                    @if (auth()->user()->hasPermission('manage_users'))
                         <x-nav-link :href="route('admin.user.index')" :active="request()->routeIs('admin.user.*')">
                             {{ __('Users') }}
                         </x-nav-link>
