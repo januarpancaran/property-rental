@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // User routes
-Route::middleware(['auth', 'permission:manage_users_permissions'])
+Route::middleware(['auth', 'permission:manage_users'])
     ->name('admin.')
     ->group(function () {
         Route::resource('/admin/user', UserController::class);
