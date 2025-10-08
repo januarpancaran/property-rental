@@ -16,13 +16,13 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @if (!auth()->user()->isAdmin())
+                    @if (auth()->user()->hasPermission('view_all_properties') && !auth()->user()->isAdmin())
                         <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.*')">
                             {{ __('Properties') }}
                         </x-nav-link>
                     @endif
 
-                    @if (auth()->user()->isLandlord())
+                    @if (auth()->user()->hasPermission('create_property') && !auth()->user()->isAdmin())
                         <x-nav-link :href="route('landlord.properties.index')" :active="request()->routeIs('landlord.properties.*')">
                             {{ __('My Properties') }}
                         </x-nav-link>
@@ -52,7 +52,7 @@
                         </x-nav-link>
                     @endif
 
-                    @if (auth()->user()->hasPermission('create_booking'))
+                    @if (auth()->user()->hasPermission('create_booking') && !auth()->user()->isAdmin())
                         <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">
                             {{ __('My Bookings') }}
                         </x-nav-link>

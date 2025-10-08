@@ -98,7 +98,6 @@ class PermissionSeeder extends Seeder
 
             // System Administration
             ['name' => 'manage_system_settings', 'display_name' => 'Manage System Settings', 'group' => 'system'],
-            ['name' => 'manage_users_permissions', 'display_name' => 'Manage Users', 'group' => 'system'],
             ['name' => 'manage_roles_permissions', 'display_name' => 'Manage Roles & Permissions', 'group' => 'system'],
             ['name' => 'view_system_logs', 'display_name' => 'View System Logs', 'group' => 'system'],
             ['name' => 'backup_database', 'display_name' => 'Backup Database', 'group' => 'system'],

@@ -19,6 +19,7 @@ class RolePermissionSeeder extends Seeder
         $landlordRole = Role::where('name', 'landlord')->first();
         $landlordPermissions = Permission::whereIn('name', [
             // Property Management
+            'view_all_properties',
             'create_property',
             'edit_own_property',
             'view_own_properties',
