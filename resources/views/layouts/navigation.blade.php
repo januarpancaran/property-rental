@@ -16,46 +16,46 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @if (!auth()->user()->isAdmin())
-                        <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.*')">
-                            {{ __('Properties') }}
-                        </x-nav-link>
+                    @if (auth()->user()->hasPermission('view_all_properties') && !auth()->user()->isAdmin())
+                    <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.*')">
+                        {{ __('Properties') }}
+                    </x-nav-link>
                     @endif
 
-                    @if (auth()->user()->isLandlord())
-                        <x-nav-link :href="route('landlord.properties.index')" :active="request()->routeIs('landlord.properties.*')">
-                            {{ __('My Properties') }}
-                        </x-nav-link>
+                    @if (auth()->user()->hasPermission('create_property') && !auth()->user()->isAdmin())
+                    <x-nav-link :href="route('landlord.properties.index')" :active="request()->routeIs('landlord.properties.*')">
+                        {{ __('My Properties') }}
+                    </x-nav-link>
                     @endif
 
                     @if (auth()->user()->hasPermission('manage_users'))
-                        <x-nav-link :href="route('admin.user.index')" :active="request()->routeIs('admin.user.*')">
-                            {{ __('Users') }}
-                        </x-nav-link>
+                    <x-nav-link :href="route('admin.user.index')" :active="request()->routeIs('admin.user.*')">
+                        {{ __('Users') }}
+                    </x-nav-link>
                     @endif
 
                     @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                        <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
-                            {{ __('Roles') }}
-                        </x-nav-link>
+                    <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
+                        {{ __('Roles') }}
+                    </x-nav-link>
                     @endif
 
                     @if (auth()->user()->hasPermission('manage_properties'))
-                        <x-nav-link :href="route('admin.properties.index')" :active="request()->routeIs('admin.properties.*')">
-                            {{ __('Properties') }}
-                        </x-nav-link>
+                    <x-nav-link :href="route('admin.properties.index')" :active="request()->routeIs('admin.properties.*')">
+                        {{ __('Properties') }}
+                    </x-nav-link>
                     @endif
 
                     @if (auth()->user()->hasPermission('manage_all_bookings'))
-                        <x-nav-link :href="route('admin.bookings.index')" :active="request()->routeIs('admin.bookings.*')">
-                            {{ __('Bookings') }}
-                        </x-nav-link>
+                    <x-nav-link :href="route('admin.bookings.index')" :active="request()->routeIs('admin.bookings.*')">
+                        {{ __('Bookings') }}
+                    </x-nav-link>
                     @endif
 
-                    @if (auth()->user()->hasPermission('create_booking'))
-                        <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">
-                            {{ __('My Bookings') }}
-                        </x-nav-link>
+                    @if (auth()->user()->hasPermission('create_booking') && !auth()->user()->isAdmin())
+                    <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">
+                        {{ __('My Bookings') }}
+                    </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -122,9 +122,9 @@
             </x-responsive-nav-link>
 
             @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('roles.*')">
-                    {{ __('Roles') }}
-                </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('roles.*')">
+                {{ __('Roles') }}
+            </x-responsive-nav-link>
             @endif
         </div>
 
