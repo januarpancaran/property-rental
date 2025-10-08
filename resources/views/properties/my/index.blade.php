@@ -5,7 +5,7 @@
                 {{ __('My Properties') }}
             </h2>
 
-            <a href="{{ route('landlord.properties.create') }}"
+            <a href="{{ route('properties.create') }}"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Add New Property
             </a>
@@ -145,7 +145,7 @@
                                             </a>
 
                                             @if (auth()->user()->isLandlord() && $property->user_id === auth()->id())
-                                                <a href="{{ route('landlord.properties.edit', $property) }}"
+                                                <a href="{{ route('properties.edit', $property) }}"
                                                     class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm">
                                                     Edit
                                                 </a>
@@ -162,7 +162,7 @@
                         <div class="text-center py-8">
                             <p class="text-gray-500 dark:text-gray-400 mb-4">No properties found.</p>
                             @if (auth()->user()->hasPermission('create_property'))
-                                <a href="{{ route('landlord.properties.create') }}"
+                                <a href="{{ route('properties.create') }}"
                                     class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">
                                     List your first property
                                 </a>

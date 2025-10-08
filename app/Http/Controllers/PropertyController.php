@@ -78,7 +78,7 @@ class PropertyController extends Controller
 
         $properties = $query->latest()->paginate(12);
 
-        return view('landlord.properties.index', compact('properties'));
+        return view('properties.my.index', compact('properties'));
     }
 
     /**
@@ -86,7 +86,7 @@ class PropertyController extends Controller
      */
     public function create()
     {
-        return view('landlord.properties.create');
+        return view('properties.create');
     }
 
     /**
@@ -155,7 +155,7 @@ class PropertyController extends Controller
             abort(403, 'Unauthorized to edit this property');
         }
 
-        return view('landlord.properties.edit', compact('property'));
+        return view('properties.edit', compact('property'));
     }
 
     /**

@@ -6,7 +6,7 @@
             </h2>
             <div class="flex gap-2">
                 @if (auth()->user()->hasPermission('edit_own_property') && $property->user_id === auth()->id())
-                    <a href="{{ route('landlord.properties.edit', $property) }}"
+                    <a href="{{ route('properties.edit', $property) }}"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                         Edit Property
                     </a>

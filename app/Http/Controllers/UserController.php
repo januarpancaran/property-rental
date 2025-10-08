@@ -16,7 +16,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->paginate(10);
-        return view('admin.user.index', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -25,7 +25,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('admin.user.create', compact('roles'));
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
@@ -63,9 +63,8 @@ class UserController extends Controller
             $role = Role::findOrFail($roleId);
             $user->update(['role_id' => $roleId]);
 
-            return redirect()->route('admin.user.index')
+            return redirect()->route('admin.users.index')
                 ->with('success', 'User ' . $user->first_name . ' ' . $user->last_name . ' berhasil dibuat.');
-
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -79,8 +78,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::with('role')->findOrFail($id);
-        return view('admin.user.show', compact('user'));
-
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -92,7 +90,7 @@ class UserController extends Controller
 
         $currentRoleId = $user->role_id ? $user->role_id : null;
 
-        return view('admin.user.edit', compact('user', 'roles', 'currentRoleId'));
+        return view('admin.users.edit', compact('user', 'roles', 'currentRoleId'));
     }
 
     /**
@@ -106,7 +104,7 @@ class UserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['required', 'string', 'max:15'],
-            'password' => ['nullable', 'string','confirmed', Password::defaults()],
+            'password' => ['nullable', 'string', 'confirmed', Password::defaults()],
             'date_of_birth' => ['required', 'date'],
             'occupation' => ['required', 'string', 'max:255'],
             'status' => ['required', 'string', 'in:active,inactive,pending'],
@@ -134,9 +132,8 @@ class UserController extends Controller
             $role = Role::findOrFail($roleId);
             $user->update(['role_id' => $roleId]);
 
-            return redirect()->route('admin.user.index')
+            return redirect()->route('admin.users.index')
                 ->with('success', 'User ' . $user->first_name . ' ' . $user->last_name . ' berhasil diperbarui.');
-
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -153,6 +150,6 @@ class UserController extends Controller
 
         $role->delete();
 
-        return redirect()->route('admin.user.index')->with('success', 'User deleted successfully!');
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
     }
 }

@@ -5,7 +5,7 @@
                 User Details: {{ $user->first_name . ' ' . $user->last_name }}
             </h2>
             @if (auth()->user()->hasPermission('manage_roles_permissions'))
-                <a href="{{ route('admin.user.edit', $user) }}"
+                <a href="{{ route('admin.users.edit', $user) }}"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Edit User
                 </a>
@@ -16,7 +16,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
-                <a href="{{ route('admin.user.index') }}"
+                <a href="{{ route('admin.users.index') }}"
                     class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-600">
                     ← Back to Users
                 </a>

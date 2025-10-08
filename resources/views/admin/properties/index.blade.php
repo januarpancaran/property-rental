@@ -161,7 +161,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('properties.show', $property) }}"
                                                     class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 mr-3">View</a>
-                                                <a href="{{ route('landlord.properties.edit', $property) }}"
+                                                <a href="{{ route('properties.edit', $property) }}"
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3">Edit</a>
                                                 <form action="{{ route('admin.properties.destroy', $property) }}"
                                                     method="POST" class="inline"
