@@ -8,128 +8,140 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', fn () => view('welcome'));
 
+Route::get('/dashboard', fn () => view('dashboard'))
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| Profile Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// User routes
-Route::middleware(['auth', 'permission:manage_users'])
-    ->name('admin.')
-    ->group(function () {
-        Route::resource('/admin/user', UserController::class);
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+
+    // User Management
+    Route::middleware('permission:manage_users')->resource('users', UserController::class);
+
+    // Role Management
+    Route::middleware('permission:manage_roles_permissions')->resource('roles', RoleController::class);
+
+    // Property Management
+    Route::middleware('permission:manage_properties')->group(function () {
+        Route::get('properties', [PropertyController::class, 'adminIndex'])->name('properties.index');
+        Route::delete('properties/{property}', [PropertyController::class, 'destroy'])->name('properties.destroy');
     });
 
-// Role routes
-Route::middleware(['auth', 'permission:manage_roles_permissions'])
-    ->name('admin.')
-    ->group(function () {
-        Route::resource('/admin/roles', RoleController::class);
+    // Booking Management
+    Route::middleware('permission:view_all_bookings')->group(function () {
+        Route::get('bookings', [BookingController::class, 'adminIndex'])->name('bookings.index');
     });
 
-// Admin Booking routes
-Route::middleware(['auth', 'permission:manage_all_bookings'])
-    ->name('admin.')
-    ->group(function () {
-        Route::resource('/admin/bookings', AdminBookingController::class);
+    // Admin Booking CRUD
+    Route::middleware('permission:manage_all_bookings')->resource('bookings', AdminBookingController::class)->except(['index']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Property Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('properties')->name('properties.')->middleware('auth')->group(function () {
+
+    // Public - Browse all properties
+    Route::get('/', [PropertyController::class, 'index'])->name('index');
+
+    // My Properties (Landlord)
+    Route::get('/my/list', [PropertyController::class, 'myProperties'])
+        ->middleware('permission:create_property')
+        ->name('my.index');
+
+    // Create Property
+    Route::middleware('permission:create_property')->group(function () {
+        Route::get('/create', [PropertyController::class, 'create'])->name('create');
+        Route::post('/', [PropertyController::class, 'store'])->name('store');
     });
 
-// Admin property management routes
-Route::middleware(['auth', 'permission:manage_properties'])->group(function () {
-    Route::get('/admin/properties', [PropertyController::class, 'adminIndex'])->name('admin.properties.index');
-    Route::delete('/admin/properties/{property}', [PropertyController::class, 'destroy'])->name('admin.properties.destroy');
+    // View Property (must be after /my/* routes to avoid conflicts)
+    Route::get('/{property}', [PropertyController::class, 'show'])->name('show');
+
+    // Edit/Update Property
+    Route::middleware('permission:edit_own_property')->group(function () {
+        Route::get('/{property}/edit', [PropertyController::class, 'edit'])->name('edit');
+        Route::put('/{property}', [PropertyController::class, 'update'])->name('update');
+    });
+
+    // Delete Property
+    Route::delete('/{property}', [PropertyController::class, 'destroy'])
+        ->middleware('permission:delete_property')
+        ->name('destroy');
+
+    // Photo Management
+    Route::middleware('permission:upload_property_photos')->group(function () {
+        Route::delete('/photos/{photo}', [PropertyController::class, 'deletePhoto'])->name('photos.delete');
+    });
+
+    // Availability & Pricing Management
+    Route::middleware('permission:manage_availability')->group(function () {
+        Route::get('/{property}/availability', [PropertyController::class, 'availability'])->name('availability');
+        Route::post('/{property}/block-dates', [PropertyController::class, 'blockDates'])->name('block-dates');
+        Route::post('/{property}/set-pricing', [PropertyController::class, 'setPricing'])->name('set-pricing');
+    });
+
+    // Property Bookings (for landlords)
+    Route::get('/{property}/bookings', [BookingController::class, 'propertyBookings'])->name('bookings');
 });
 
-// Public properties listing
-Route::get('/properties', [PropertyController::class, 'index'])
-    ->middleware('auth')
-    ->name('properties.index');
+/*
+|--------------------------------------------------------------------------
+| Booking Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('bookings')->name('bookings.')->middleware('auth')->group(function () {
 
-// Property create
-Route::middleware(['auth', 'permission:create_property'])->group(function () {
-    Route::get('/landlord/properties', [PropertyController::class, 'myProperties'])->name('landlord.properties.index');
-    Route::get('/landlord/properties/create', [PropertyController::class, 'create'])->name('landlord.properties.create');
-    Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store');
-});
+    // List user's bookings
+    Route::get('/', [BookingController::class, 'index'])->name('index');
 
-// Property show
-Route::get('/properties/{property}', [PropertyController::class, 'show'])
-    ->middleware('auth')
-    ->name('properties.show');
+    // Create booking
+    Route::middleware('permission:create_booking')->group(function () {
+        Route::get('/create', [BookingController::class, 'create'])->name('create');
+        Route::post('/', [BookingController::class, 'store'])->name('store');
+    });
 
-// Property edit
-Route::middleware(['auth', 'permission:edit_own_property'])->group(function () {
-    Route::get('/landlord/properties/{property}/edit', [PropertyController::class, 'edit'])->name('landlord.properties.edit');
-    Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
-});
-
-Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])
-    ->middleware(['auth', 'permission:delete_property'])
-    ->name('landlord.properties.destroy');
-
-// Property photos
-Route::middleware(['auth', 'permission:upload_property_photos'])->group(function () {
-    Route::delete('/landlord/properties/photos/{photo}', [PropertyController::class, 'deletePhoto'])->name('properties.photos.delete');
-});
-
-// Availability management
-Route::middleware(['auth', 'permission:manage_availability'])->group(function () {
-    Route::get('/landlord/properties/{property}/availability', [PropertyController::class, 'availability'])->name('properties.availability');
-    Route::post('/landlord/properties/{property}/block-dates', [PropertyController::class, 'blockDates'])->name('properties.block-dates');
-    Route::post('/landlord/properties/{property}/set-pricing', [PropertyController::class, 'setPricing'])->name('properties.set-pricing');
-});
-
-// Booking Management Routes
-Route::middleware('auth')->group(function () {
-    // Tenant bookings
-    Route::get('/bookings', [BookingController::class, 'index'])
-        ->name('bookings.index');
-
-    Route::get('/bookings/create', [BookingController::class, 'create'])
-        ->middleware('permission:create_booking')
-        ->name('bookings.create');
-
-    Route::post('/bookings', [BookingController::class, 'store'])
-        ->middleware('permission:create_booking')
-        ->name('bookings.store');
-
-    Route::get('/bookings/{booking}', [BookingController::class, 'show'])
-        ->name('bookings.show');
+    // View booking
+    Route::get('/{booking}', [BookingController::class, 'show'])->name('show');
 
     // Booking actions
-    Route::post('/bookings/{booking}/confirm', [BookingController::class, 'confirm'])
+    Route::post('/{booking}/confirm', [BookingController::class, 'confirm'])
         ->middleware('permission:confirm_booking')
-        ->name('bookings.confirm');
+        ->name('confirm');
 
-    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])
-        ->name('bookings.cancel');
+    Route::post('/{booking}/cancel', [BookingController::class, 'cancel'])->name('cancel');
 
-    Route::post('/bookings/{booking}/complete', [BookingController::class, 'complete'])
+    Route::post('/{booking}/complete', [BookingController::class, 'complete'])
         ->middleware('permission:complete_booking')
-        ->name('bookings.complete');
+        ->name('complete');
 
-    // Property bookings (for landlords)
-    Route::get('/properties/{property}/bookings', [BookingController::class, 'propertyBookings'])
-        ->name('properties.bookings');
-
-    // AJAX endpoint for availability check
-    Route::post('/bookings/check-availability', [BookingController::class, 'checkAvailability'])
-        ->name('bookings.check-availability');
-});
-
-// Admin booking management
-Route::middleware(['auth', 'permission:view_all_bookings'])->group(function () {
-    Route::get('/admin/bookings', [BookingController::class, 'adminIndex'])
-        ->name('admin.bookings.index');
+    // AJAX: Check availability
+    Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check-availability');
 });
 
 require __DIR__ . '/auth.php';

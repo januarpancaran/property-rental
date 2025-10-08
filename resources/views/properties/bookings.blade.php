@@ -14,7 +14,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
-                <a href="{{ route('landlord.properties.index') }}"
+                <a href="{{ route('properties.my.index') }}"
                     class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">
                     ← Back to My Properties
                 </a>

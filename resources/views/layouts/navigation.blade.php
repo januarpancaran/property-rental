@@ -17,19 +17,19 @@
                     </x-nav-link>
 
                     @if (auth()->user()->hasPermission('view_all_properties') && !auth()->user()->isAdmin())
-                        <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.*')">
+                        <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.index')">
                             {{ __('Properties') }}
                         </x-nav-link>
                     @endif
 
                     @if (auth()->user()->hasPermission('create_property') && !auth()->user()->isAdmin())
-                        <x-nav-link :href="route('landlord.properties.index')" :active="request()->routeIs('landlord.properties.*')">
+                        <x-nav-link :href="route('properties.my.index')" :active="request()->routeIs('properties.my.*')">
                             {{ __('My Properties') }}
                         </x-nav-link>
                     @endif
 
                     @if (auth()->user()->hasPermission('manage_users'))
-                        <x-nav-link :href="route('admin.user.index')" :active="request()->routeIs('admin.user.*')">
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Users') }}
                         </x-nav-link>
                     @endif
