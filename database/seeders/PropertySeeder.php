@@ -14,11 +14,17 @@ class PropertySeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
+        $landlord = User::where('role_id', 2)->first();
+
+        // kalau belum ada, kasih peringatan aja biar nggak error
+        if (!$landlord) {
+            $this->command->warn('⚠️ User landlord bernama "Doe" tidak ditemukan.');
+            return;
+        }
 
     foreach (range(1, 5) as $i) {
         Property::create([
-            'user_id' => $users->random()->id, // ambil user acak
+            'user_id' => $landlord->id,
             'title' => "Rumah Nyaman #{$i}",
             'description' => "Deskripsi singkat untuk rumah ke-{$i}",
             'address' => "Jl. Contoh No.{$i}",
