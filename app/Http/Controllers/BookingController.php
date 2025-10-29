@@ -7,6 +7,7 @@ use App\Models\Property;
 use App\Models\AvailabilityCalendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class BookingController extends Controller
@@ -56,7 +57,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Store a newly created booking
+     * Store a newly created booking and redirect to payment
      */
     public function store(Request $request)
     {
@@ -103,39 +104,54 @@ class BookingController extends Controller
                 ->withInput();
         }
 
-        // Calculate total amount
-        $checkIn = Carbon::parse($validated['check_in_date']);
-        $checkOut = Carbon::parse($validated['check_out_date']);
-        $nights = $checkIn->diffInDays($checkOut);
-        $dailyRate = $property->rent_amount / 30; // Convert monthly to daily
-        $totalAmount = $nights * $dailyRate;
+        DB::beginTransaction();
 
-        $booking = Booking::create([
-            'property_id' => $validated['property_id'],
-            'user_id' => Auth::id(),
-            'check_in_date' => $validated['check_in_date'],
-            'check_out_date' => $validated['check_out_date'],
-            'total_amount' => $totalAmount,
-            'notes' => $validated['notes'] ?? null,
-            'booking_status' => 'pending',
-            'payment_status' => 'unpaid',
-        ]);
+        try {
+            // Calculate total amount
+            $checkIn = Carbon::parse($validated['check_in_date']);
+            $checkOut = Carbon::parse($validated['check_out_date']);
+            $nights = $checkIn->diffInDays($checkOut);
+            $dailyRate = $property->rent_amount / 30; // Convert monthly to daily
+            $totalAmount = $nights * $dailyRate;
 
-        // Block dates in availability calendar
-        $currentDate = $validated['check_in_date'];
-        while ($currentDate < $validated['check_out_date']) {
-            AvailabilityCalendar::updateOrCreate(
-                [
-                    'property_id' => $validated['property_id'],
-                    'date' => $currentDate
-                ],
-                ['status' => 'booked']
-            );
-            $currentDate = Carbon::parse($currentDate)->addDay()->toDateString();
+            // Create booking
+            $booking = Booking::create([
+                'property_id' => $validated['property_id'],
+                'user_id' => Auth::id(),
+                'check_in_date' => $validated['check_in_date'],
+                'check_out_date' => $validated['check_out_date'],
+                'total_amount' => $totalAmount,
+                'notes' => $validated['notes'] ?? null,
+                'booking_status' => 'pending',
+                'payment_status' => 'unpaid',
+            ]);
+
+            // Block dates in availability calendar
+            $currentDate = $validated['check_in_date'];
+            while ($currentDate < $validated['check_out_date']) {
+                AvailabilityCalendar::updateOrCreate(
+                    [
+                        'property_id' => $validated['property_id'],
+                        'date' => $currentDate
+                    ],
+                    ['status' => 'booked']
+                );
+                $currentDate = Carbon::parse($currentDate)->addDay()->toDateString();
+            }
+
+            DB::commit();
+
+            // Redirect to payment confirmation page
+            return redirect()->route('orders.confirm', $booking)
+                ->with('success', 'Booking created! Please proceed with payment.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to create booking. Please try again.'])
+                ->withInput();
         }
-
-        return redirect()->route('bookings.show', $booking)
-            ->with('success', 'Booking request submitted successfully! Waiting for landlord confirmation.');
     }
 
     /**
@@ -172,6 +188,12 @@ class BookingController extends Controller
                 ->withErrors(['booking' => 'Only pending bookings can be confirmed.']);
         }
 
+        // Check if payment is completed
+        if (!$booking->isPaid()) {
+            return redirect()->back()
+                ->withErrors(['booking' => 'Booking can only be confirmed after payment is completed.']);
+        }
+
         $booking->update(['booking_status' => 'confirmed']);
 
         return redirect()->back()
@@ -197,20 +219,32 @@ class BookingController extends Controller
                 ->withErrors(['booking' => 'This booking cannot be cancelled.']);
         }
 
-        $booking->update([
-            'booking_status' => 'cancelled',
-            'notes' => $booking->notes . "\n\nCancelled by: " . Auth::user()->full_name .
-                " on " . now()->format('Y-m-d H:i:s')
-        ]);
+        DB::beginTransaction();
 
-        // Free up the availability calendar
-        AvailabilityCalendar::where('property_id', $booking->property_id)
-            ->whereBetween('date', [$booking->check_in_date->toDateString(), $booking->check_out_date->toDateString()])
-            ->where('status', 'booked')
-            ->update(['status' => 'available']);
+        try {
+            $booking->update([
+                'booking_status' => 'cancelled',
+                'notes' => $booking->notes . "\n\nCancelled by: " . Auth::user()->full_name .
+                    " on " . now()->format('Y-m-d H:i:s')
+            ]);
 
-        return redirect()->back()
-            ->with('success', 'Booking cancelled successfully!');
+            // Free up the availability calendar
+            AvailabilityCalendar::where('property_id', $booking->property_id)
+                ->whereBetween('date', [$booking->check_in_date->toDateString(), $booking->check_out_date->toDateString()])
+                ->where('status', 'booked')
+                ->update(['status' => 'available']);
+
+            DB::commit();
+
+            return redirect()->back()
+                ->with('success', 'Booking cancelled successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to cancel booking. Please try again.']);
+        }
     }
 
     /**
