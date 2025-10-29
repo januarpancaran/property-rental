@@ -34,7 +34,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-4. Configure database
+4. Configure env
 
 ```bash
 DB_CONNECTION=mysql
@@ -43,6 +43,12 @@ DB_PORT=3306
 DB_DATABASE=property_db
 DB_USERNAME=root
 DB_PASSWORD=
+
+# Payment Gateway Configuration
+PAYMENT_API_KEY=
+PAYMENT_BASE_URL=
+PAYMENT_WEBHOOK_SECRET=
+PAYMENT_EXPIRED_HOURS=24
 ```
 
 5. Run migrations
