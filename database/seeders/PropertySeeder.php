@@ -16,22 +16,22 @@ class PropertySeeder extends Seeder
     {
         $users = User::all();
 
-    foreach (range(1, 5) as $i) {
-        Property::create([
-            'user_id' => $users->random()->id, // ambil user acak
-            'title' => "Rumah Nyaman #{$i}",
-            'description' => "Deskripsi singkat untuk rumah ke-{$i}",
-            'address' => "Jl. Contoh No.{$i}",
-            'city' => "Jakarta",
-            'state' => "DKI Jakarta",
-            'postal_code' => "10110",
-            'property_type' => "house",
-            'rent_amount' => rand(1000000, 9000000),
-            'bedrooms' => rand(1, 5),
-            'bathrooms' => rand(1, 3),
-            'area_sqm' => rand(50, 200),
-            'status' => "available",
-        ]);
-    }
+        foreach (range(1, 5) as $i) {
+            Property::create([
+                'user_id' => $users->random()->id, // ambil user acak
+                'title' => "Rumah Nyaman #{$i}",
+                'description' => "Deskripsi singkat untuk rumah ke-{$i}",
+                'address' => "Jl. Contoh No.{$i}",
+                'city' => "Jakarta",
+                'state' => "DKI Jakarta",
+                'postal_code' => "10110",
+                'property_type' => "house",
+                'rent_amount' => rand(1000000, 9000000),
+                'bedrooms' => rand(1, 5),
+                'bathrooms' => rand(1, 3),
+                'area_sqm' => rand(50, 200),
+                'status' => "available",
+            ]);
+        }
     }
 }
