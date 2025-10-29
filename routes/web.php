@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -143,5 +145,31 @@ Route::prefix('bookings')->name('bookings.')->middleware('auth')->group(function
     // AJAX: Check availability
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check-availability');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Order/Payment Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('orders')->name('orders.')->middleware('auth')->group(function () {
+
+    // List user's orders
+    Route::get('/', [OrderController::class, 'index'])->name('index');
+
+    // View order details
+    Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+
+    // Payment flow
+    Route::get('/{booking}/confirm', [OrderController::class, 'confirm'])->name('confirm');
+    Route::post('/{booking}/process', [OrderController::class, 'process'])->name('process');
+    Route::get('/{order}/waiting', [OrderController::class, 'waiting'])->name('waiting');
+    Route::get('/{order}/success', [OrderController::class, 'success'])->name('success');
+
+    // AJAX: Check payment status
+    Route::get('/{order}/check-status', [OrderController::class, 'checkStatus'])->name('check-status');
+});
+
+// Webhook Route (no auth middleware)
+Route::post('/webhook/payment', [WebhookController::class, 'handlePayment'])->name('webhook.payment');
 
 require __DIR__ . '/auth.php';

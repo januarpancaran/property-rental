@@ -177,6 +177,22 @@ class User extends Authenticatable
         return $this->hasMany(Contract::class, 'user_id')->current();
     }
 
+    // Relationship with orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function paidOrders()
+    {
+        return $this->hasMany(Order::class)->paid();
+    }
+
+    public function pendingOrders()
+    {
+        return $this->hasMany(Order::class)->pending();
+    }
+
     // Relationsip with maintenance
     public function maintenances()
     {
