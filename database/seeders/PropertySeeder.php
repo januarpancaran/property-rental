@@ -14,23 +14,88 @@ class PropertySeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
+        // Get all landlords (role_id = 2)
+        $landlords = User::where('role_id', 2)->get();
 
-        foreach (range(1, 5) as $i) {
+        if ($landlords->isEmpty()) {
+            $this->command->warn('⚠️ No users with landlord role found.');
+            return;
+        }
+
+        // Property types to randomize
+        $propertyTypes = ['apartment', 'house', 'condo', 'townhouse', 'studio'];
+
+        // Cities in Indonesia
+        $cities = [
+            ['city' => 'Jakarta', 'state' => 'DKI Jakarta', 'postal_code' => '10110'],
+            ['city' => 'Bandung', 'state' => 'West Java', 'postal_code' => '40111'],
+            ['city' => 'Surabaya', 'state' => 'East Java', 'postal_code' => '60111'],
+            ['city' => 'Semarang', 'state' => 'Central Java', 'postal_code' => '50111'],
+            ['city' => 'Yogyakarta', 'state' => 'DI Yogyakarta', 'postal_code' => '55111'],
+        ];
+
+        foreach (range(1, 15) as $i) {
+            // Randomly select a landlord
+            $randomLandlord = $landlords->random();
+
+            // Randomly select a property type
+            $randomPropertyType = $propertyTypes[array_rand($propertyTypes)];
+
+            // Randomly select a city
+            $randomCity = $cities[array_rand($cities)];
+
+            // Adjust property characteristics based on type
+            $bedrooms = match($randomPropertyType) {
+                'studio' => 0,
+                'apartment' => rand(1, 3),
+                'townhouse' => rand(2, 4),
+                'villa' => rand(3, 6),
+                'house' => rand(2, 5),
+                default => rand(1, 3)
+            };
+
+            $bathrooms = match($randomPropertyType) {
+                'studio' => 1,
+                'apartment' => rand(1, 2),
+                'townhouse' => rand(2, 3),
+                'villa' => rand(2, 4),
+                'house' => rand(1, 3),
+                default => rand(1, 2)
+            };
+
+            $areaSqm = match($randomPropertyType) {
+                'studio' => rand(20, 35),
+                'apartment' => rand(35, 80),
+                'townhouse' => rand(80, 150),
+                'villa' => rand(150, 300),
+                'house' => rand(60, 200),
+                default => rand(50, 150)
+            };
+
+            $rentAmount = match($randomPropertyType) {
+                'studio' => rand(1500000, 3000000),
+                'apartment' => rand(3000000, 6000000),
+                'townhouse' => rand(5000000, 10000000),
+                'villa' => rand(10000000, 25000000),
+                'house' => rand(4000000, 12000000),
+                default => rand(2000000, 8000000)
+            };
+
             Property::create([
-                'user_id' => $users->random()->id, // ambil user acak
-                'title' => "Rumah Nyaman #{$i}",
-                'description' => "Deskripsi singkat untuk rumah ke-{$i}",
-                'address' => "Jl. Contoh No.{$i}",
-                'city' => "Jakarta",
-                'state' => "DKI Jakarta",
-                'postal_code' => "10110",
-                'property_type' => "house",
-                'rent_amount' => rand(1000000, 9000000),
-                'bedrooms' => rand(1, 5),
-                'bathrooms' => rand(1, 3),
-                'area_sqm' => rand(50, 200),
-                'status' => "available",
+                'user_id' => $randomLandlord->id,
+                'title' => "Comfortable " . ucfirst($randomPropertyType) . " in " . $randomCity['city'],
+                'description' => "A comfortable and strategic {$randomPropertyType} located in {$randomCity['city']}. " .
+                                "Perfect for families or professionals. Close to public facilities and amenities.",
+                'address' => "Jl. Merdeka No." . rand(1, 100),
+                'city' => $randomCity['city'],
+                'state' => $randomCity['state'],
+                'postal_code' => $randomCity['postal_code'],
+                'property_type' => $randomPropertyType,
+                'rent_amount' => $rentAmount,
+                'bedrooms' => $bedrooms,
+                'bathrooms' => $bathrooms,
+                'area_sqm' => $areaSqm,
+                'status' => 'available',
             ]);
         }
     }
