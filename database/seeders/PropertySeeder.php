@@ -45,39 +45,39 @@ class PropertySeeder extends Seeder
             $randomCity = $cities[array_rand($cities)];
 
             // Adjust property characteristics based on type
-            $bedrooms = match($randomPropertyType) {
+            $bedrooms = match ($randomPropertyType) {
                 'studio' => 0,
                 'apartment' => rand(1, 3),
-                'townhouse' => rand(2, 4),
-                'villa' => rand(3, 6),
-                'house' => rand(2, 5),
+                'condo' => rand(2, 4),
+                'house' => rand(3, 6),
+                'townhouse' => rand(2, 5),
                 default => rand(1, 3)
             };
 
-            $bathrooms = match($randomPropertyType) {
+            $bathrooms = match ($randomPropertyType) {
                 'studio' => 1,
                 'apartment' => rand(1, 2),
-                'townhouse' => rand(2, 3),
-                'villa' => rand(2, 4),
-                'house' => rand(1, 3),
+                'condo' => rand(2, 3),
+                'house' => rand(2, 4),
+                'townhouse' => rand(1, 3),
                 default => rand(1, 2)
             };
 
-            $areaSqm = match($randomPropertyType) {
+            $areaSqm = match ($randomPropertyType) {
                 'studio' => rand(20, 35),
                 'apartment' => rand(35, 80),
-                'townhouse' => rand(80, 150),
-                'villa' => rand(150, 300),
-                'house' => rand(60, 200),
+                'condo' => rand(80, 150),
+                'house' => rand(150, 300),
+                'townhouse' => rand(60, 200),
                 default => rand(50, 150)
             };
 
-            $rentAmount = match($randomPropertyType) {
+            $rentAmount = match ($randomPropertyType) {
                 'studio' => rand(1500000, 3000000),
                 'apartment' => rand(3000000, 6000000),
-                'townhouse' => rand(5000000, 10000000),
-                'villa' => rand(10000000, 25000000),
-                'house' => rand(4000000, 12000000),
+                'condo' => rand(5000000, 10000000),
+                'house' => rand(10000000, 25000000),
+                'townhouse' => rand(4000000, 12000000),
                 default => rand(2000000, 8000000)
             };
 
@@ -85,7 +85,7 @@ class PropertySeeder extends Seeder
                 'user_id' => $randomLandlord->id,
                 'title' => "Comfortable " . ucfirst($randomPropertyType) . " in " . $randomCity['city'],
                 'description' => "A comfortable and strategic {$randomPropertyType} located in {$randomCity['city']}. " .
-                                "Perfect for families or professionals. Close to public facilities and amenities.",
+                    "Perfect for families or professionals. Close to public facilities and amenities.",
                 'address' => "Jl. Merdeka No." . rand(1, 100),
                 'city' => $randomCity['city'],
                 'state' => $randomCity['state'],
