@@ -46,7 +46,7 @@ DB_PASSWORD=
 
 # Payment Gateway Configuration
 PAYMENT_API_KEY=
-PAYMENT_BASE_URL=
+PAYMENT_BASE_URL=https://payment-dummy.doovera.com/api/v1
 PAYMENT_WEBHOOK_SECRET=
 PAYMENT_EXPIRED_HOURS=24
 ```
