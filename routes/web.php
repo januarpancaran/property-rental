@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,9 +17,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', fn() => view('welcome'));
 
-Route::get('/dashboard', fn () => view('dashboard'))
+Route::get('/dashboard', fn() => view('dashboard'))
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -144,6 +145,64 @@ Route::prefix('bookings')->name('bookings.')->middleware('auth')->group(function
 
     // AJAX: Check availability
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check-availability');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Maintenance Routes
+|--------------------------------------------------------------------------
+*/
+
+// --- Routes untuk Tenant (Membuat & Melihat Permintaan Sendiri) ---
+Route::middleware(['auth'])->prefix('tenant')->group(function () {
+    // Menampilkan daftar permintaan perawatan milik penyewa
+    Route::get('/maintenances', [MaintenanceController::class, 'indexTenant'])
+        ->name('tenant.maintenances.index')
+        ->middleware('permission:view_own_maintenance');
+
+    // Menampilkan form untuk membuat permintaan baru
+    Route::get('/maintenances/create', [MaintenanceController::class, 'create'])
+        ->name('tenant.maintenances.create')
+        ->middleware('permission:create_maintenance_request');
+
+    // Menyimpan permintaan baru
+    Route::post('/maintenances', [MaintenanceController::class, 'store'])
+        ->name('tenant.maintenances.store')
+        ->middleware('permission:create_maintenance_request');
+
+    // Melihat detail permintaan milik sendiri
+    Route::get('/maintenances/{maintenance}', [MaintenanceController::class, 'showTenant'])
+        ->name('tenant.maintenances.show')
+        ->middleware('permission:view_own_maintenance');
+});
+
+
+// --- Routes untuk Landlord & Admin (Manajemen Permintaan) ---
+Route::middleware(['auth'])->prefix('manage')->group(function () {
+    // Daftar semua permintaan (Admin: semua; Landlord: properti sendiri)
+    Route::get('/maintenances', [MaintenanceController::class, 'indexManage'])
+        ->name('manage.maintenances.index')
+        ->middleware('permission:view_property_maintenance'); // atau view_all_maintenance jika ada
+
+    // Melihat detail permintaan
+    Route::get('/maintenances/{maintenance}', [MaintenanceController::class, 'showManage'])
+        ->name('manage.maintenances.show')
+        ->middleware('permission:view_property_maintenance');
+
+    // Update status/schedule/assign
+    Route::put('/maintenances/{maintenance}/update', [MaintenanceController::class, 'update'])
+        ->name('manage.maintenances.update')
+        ->middleware('permission:schedule_maintenance');
+
+    // Mark as completed
+    Route::post('/maintenances/{maintenance}/complete', [MaintenanceController::class, 'complete'])
+        ->name('manage.maintenances.complete')
+        ->middleware('permission:complete_maintenance');
+
+    // Cancel request
+    Route::post('/maintenances/{maintenance}/cancel', [MaintenanceController::class, 'cancel'])
+        ->name('manage.maintenances.cancel')
+        ->middleware('permission:complete_maintenance');
 });
 
 /*
