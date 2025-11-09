@@ -119,29 +119,29 @@
 
                 <div class="flex justify-start space-x-4 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
                     {{-- @can('complete_maintenance') --}}
-                        @if (!$maintenance->isCompleted() && !$maintenance->isCancelled())
-                            <form method="POST" action="{{ route('manage.maintenances.complete', $maintenance) }}">
-                                @csrf
-                                <button type="submit"
-                                    onclick="return confirm('Apakah Anda yakin ingin menandai permintaan ini sebagai SELESAI?')"
-                                    class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-                                    Tandai Selesai
-                                </button>
-                            </form>
-                        @endif
+                    @if (!$maintenance->isCompleted() && !$maintenance->isCancelled())
+                        <form method="POST" action="{{ route('manage.maintenances.complete', $maintenance) }}">
+                            @csrf
+                            <button type="submit"
+                                onclick="return confirm('Apakah Anda yakin ingin menandai permintaan ini sebagai SELESAI?')"
+                                class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                                Tandai Selesai
+                            </button>
+                        </form>
+                    @endif
                     {{-- @endcan --}}
 
                     {{-- @can('complete_maintenance') --}}
-                        @if (!$maintenance->isCompleted() && !$maintenance->isCancelled())
-                            <form method="POST" action="{{ route('manage.maintenances.cancel', $maintenance) }}">
-                                @csrf
-                                <button type="submit"
-                                    onclick="return confirm('Apakah Anda yakin ingin MEMBATALKAN permintaan ini?')"
-                                    class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
-                                    Batalkan Permintaan
-                                </button>
-                            </form>
-                        @endif
+                    @if (!$maintenance->isCompleted() && !$maintenance->isCancelled())
+                        <form method="POST" action="{{ route('manage.maintenances.cancel', $maintenance) }}">
+                            @csrf
+                            <button type="submit"
+                                onclick="return confirm('Apakah Anda yakin ingin MEMBATALKAN permintaan ini?')"
+                                class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                                Batalkan Permintaan
+                            </button>
+                        </form>
+                    @endif
                     {{-- @endcan --}}
                 </div>
 
