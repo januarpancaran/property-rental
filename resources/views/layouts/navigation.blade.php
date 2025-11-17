@@ -57,6 +57,18 @@
                             {{ __('My Bookings') }}
                         </x-nav-link>
                     @endif
+
+                    @if (auth()->user()->hasPermission('view_own_maintenance') && !auth()->user()->isAdmin())
+                        <x-nav-link :href="route('tenant.maintenances.index')" :active="request()->routeIs('maintenance.*')">
+                            {{ __('My Maintenance') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if (auth()->user()->hasPermission('view_property_maintenance') && !auth()->user()->isAdmin())
+                        <x-nav-link :href="route('manage.maintenances.index')" :active="request()->routeIs('maintenance.*')">
+                            {{ __('Property Maintenance') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
