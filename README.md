@@ -68,9 +68,11 @@ php artisan storage:link
 ```bash
 npm run dev
 php artisan serve
+php artisan queue:work
+ngrok http 8000
 
 # Or run both at the same time
-npx concurrently "npm run dev" "php artisan serve"
+npx concurrently "npm run dev" "php artisan serve" "php artisan queue:work" "ngrok http 8000"
 ```
 
 Your app should be running at `https://localhost:8000`
