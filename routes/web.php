@@ -17,9 +17,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', fn() => view('welcome'));
 
-Route::get('/dashboard', fn () => view('dashboard'))
+Route::get('/dashboard', fn() => view('dashboard'))
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -32,6 +32,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Routes (for AJAX calls)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('api')->name('api.')->group(function () {
+    // Get blocked dates for a property (used by booking calendar)
+    Route::get('/properties/{id}/blocked-dates', [PropertyController::class, 'getBlockedDates'])
+        ->name('properties.blocked-dates');
 });
 
 /*
@@ -143,7 +154,7 @@ Route::prefix('bookings')->name('bookings.')->middleware('auth')->group(function
         ->middleware('permission:complete_booking')
         ->name('complete');
 
-    // AJAX: Check availability
+    // AJAX: Check availability (deprecated but kept for backward compatibility)
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check-availability');
 });
 

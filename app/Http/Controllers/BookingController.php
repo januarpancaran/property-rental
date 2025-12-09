@@ -84,7 +84,7 @@ class BookingController extends Controller
                 ->withInput();
         }
 
-        // Check for date conflicts
+        // Check for date conflicts with existing bookings
         $hasConflict = Booking::hasOverlappingBooking(
             $validated['property_id'],
             $validated['check_in_date'],
@@ -93,11 +93,11 @@ class BookingController extends Controller
 
         if ($hasConflict) {
             return redirect()->back()
-                ->withErrors(['dates' => 'Selected dates are not available.'])
+                ->withErrors(['dates' => 'Selected dates are not available. Please choose different dates.'])
                 ->withInput();
         }
 
-        // Check availability calendar
+        // Check availability calendar for blocked dates
         if (!$property->isAvailableForDates($validated['check_in_date'], $validated['check_out_date'])) {
             return redirect()->back()
                 ->withErrors(['dates' => 'Selected dates are blocked or unavailable.'])
@@ -144,7 +144,6 @@ class BookingController extends Controller
             // Redirect to payment confirmation page
             return redirect()->route('orders.confirm', $booking)
                 ->with('success', 'Booking created! Please proceed with payment.');
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -194,10 +193,20 @@ class BookingController extends Controller
                 ->withErrors(['booking' => 'Booking can only be confirmed after payment is completed.']);
         }
 
-        $booking->update(['booking_status' => 'confirmed']);
+        DB::beginTransaction();
+        try {
+            $booking->update(['booking_status' => 'confirmed']);
 
-        return redirect()->back()
-            ->with('success', 'Booking confirmed successfully!');
+            $booking->property->update(['status' => 'rented']);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Booking confirmed successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Failed to confirm booking: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Failed to confirm booking.']);
+        }
     }
 
     /**
@@ -234,11 +243,19 @@ class BookingController extends Controller
                 ->where('status', 'booked')
                 ->update(['status' => 'available']);
 
+            $hasOtherActiveBookings = Booking::where('property_id', $booking->property_id)
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->where('id', '!=', $booking->id)
+                ->exists();
+
+            if (!$hasOtherActiveBookings) {
+                $booking->property->update(['status' => 'available']);
+            }
+
             DB::commit();
 
             return redirect()->back()
                 ->with('success', 'Booking cancelled successfully!');
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -262,10 +279,25 @@ class BookingController extends Controller
                 ->withErrors(['booking' => 'Only confirmed bookings can be completed.']);
         }
 
-        $booking->update(['booking_status' => 'completed']);
+        DB::beginTransaction();
+        try {
+            $booking->update(['booking_status' => 'completed']);
 
-        return redirect()->back()
-            ->with('success', 'Booking marked as completed!');
+            $hasFutureBookings = Booking::where('property_id', $booking->property_id)
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->where('check_in_date', '>', $booking->check_out_date)
+                ->exists();
+
+            if (!$hasFutureBookings) {
+                $booking->property->update(['status' => 'available']);
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Booking marked as completed!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to complete booking.']);
+        }
     }
 
     /**

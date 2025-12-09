@@ -54,19 +54,17 @@
                                                     </p>
                                                 </div>
                                                 <div class="flex gap-2">
-                                                    <span
-                                                        class="px-3 py-1 text-xs rounded capitalize
-                                                        @if ($booking->booking_status === 'confirmed') bg-green-500 text-white
-                                                        @elseif($booking->booking_status === 'pending') bg-yellow-500 text-white
-                                                        @elseif($booking->booking_status === 'cancelled') bg-red-500 text-white
-                                                        @else bg-blue-500 text-white @endif">
+                                                    <span class="px-3 py-1 text-xs rounded capitalize
+                                                                @if ($booking->booking_status === 'confirmed') bg-green-500 text-white
+                                                                @elseif($booking->booking_status === 'pending') bg-yellow-500 text-white
+                                                                @elseif($booking->booking_status === 'cancelled') bg-red-500 text-white
+                                                                @else bg-blue-500 text-white @endif">
                                                         {{ $booking->booking_status }}
                                                     </span>
-                                                    <span
-                                                        class="px-3 py-1 text-xs rounded capitalize
-                                                        @if ($booking->payment_status === 'paid') bg-green-500 text-white
-                                                        @elseif($booking->payment_status === 'unpaid') bg-red-500 text-white
-                                                        @else bg-yellow-500 text-white @endif">
+                                                    <span class="px-3 py-1 text-xs rounded capitalize
+                                                                @if ($booking->payment_status === 'paid') bg-green-500 text-white
+                                                                @elseif($booking->payment_status === 'unpaid') bg-red-500 text-white
+                                                                @else bg-yellow-500 text-white @endif">
                                                         {{ $booking->payment_status }}
                                                     </span>
                                                 </div>
@@ -76,12 +74,14 @@
                                                 <div>
                                                     <span class="text-gray-500 dark:text-gray-400">Check-in:</span>
                                                     <p class="font-medium dark:text-gray-200">
-                                                        {{ $booking->check_in_date->format('d M Y') }}</p>
+                                                        {{ $booking->check_in_date->format('d M Y') }}
+                                                    </p>
                                                 </div>
                                                 <div>
                                                     <span class="text-gray-500 dark:text-gray-400">Check-out:</span>
                                                     <p class="font-medium dark:text-gray-200">
-                                                        {{ $booking->check_out_date->format('d M Y') }}</p>
+                                                        {{ $booking->check_out_date->format('d M Y') }}
+                                                    </p>
                                                 </div>
                                                 <div>
                                                     <span class="text-gray-500 dark:text-gray-400">Nights:</span>
@@ -91,14 +91,14 @@
                                                 <div>
                                                     <span class="text-gray-500 dark:text-gray-400">Total:</span>
                                                     <p class="font-medium text-blue-600 dark:text-blue-400">
-                                                        {{ $booking->formatted_total_amount }}</p>
+                                                        {{ $booking->formatted_total_amount }}
+                                                    </p>
                                                 </div>
                                             </div>
 
                                             <div class="flex justify-end gap-2 mt-8">
-                                                @if (in_array($booking->booking_status, ['pending', 'confirmed']))
-                                                    <form action="{{ route('bookings.cancel', $booking) }}"
-                                                        method="POST"
+                                                @if (in_array($booking->booking_status, ['pending']))
+                                                    <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
                                                         onsubmit="return confirm('Are you sure you want to cancel this booking?');">
                                                         @csrf
                                                         <button type="submit"

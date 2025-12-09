@@ -33,8 +33,8 @@
             <!-- Filters -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('properties.index') }}"
-                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <form method="GET" action="{{ route('properties.index') }}" id="filterForm"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
                             <input type="text" name="city" value="{{ request('city') }}"
@@ -73,11 +73,31 @@
                                     Maintenance</option>
                             </select>
                         </div>
-                        <div class="flex items-end">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available
+                                From</label>
+                            <input type="date" name="check_in" id="check_in" value="{{ request('check_in') }}"
+                                min="{{ date('Y-m-d') }}"
+                                class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available
+                                To</label>
+                            <input type="date" name="check_out" id="check_out" value="{{ request('check_out') }}"
+                                min="{{ request('check_in') ?: date('Y-m-d', strtotime('+1 day')) }}"
+                                class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        </div>
+                        <div class="lg:col-span-5 flex gap-2">
                             <button type="submit"
-                                class="w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                                Filter
+                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                Filter Properties
                             </button>
+                            @if (request()->hasAny(['city', 'property_type', 'status', 'check_in', 'check_out']))
+                                <a href="{{ route('properties.index') }}"
+                                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                                    Clear Filters
+                                </a>
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -86,6 +106,17 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     @if ($properties->count() > 0)
+                        @if (request('check_in') && request('check_out'))
+                            <div
+                                class="mb-4 p-4 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded">
+                                <p class="text-blue-800 dark:text-blue-200">
+                                    Showing properties available from
+                                    <strong>{{ date('M d, Y', strtotime(request('check_in'))) }}</strong>
+                                    to <strong>{{ date('M d, Y', strtotime(request('check_out'))) }}</strong>
+                                </p>
+                            </div>
+                        @endif
+
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             @foreach ($properties as $property)
                                 <div
@@ -141,7 +172,17 @@
 
                                         <!-- Actions -->
                                         <div class="mt-4 flex gap-2">
-                                            <a href="{{ route('properties.show', $property) }}"
+                                            @php
+                                                $viewUrl = route('properties.show', $property);
+                                                if (request('check_in') && request('check_out')) {
+                                                    $viewUrl .=
+                                                        '?check_in=' .
+                                                        request('check_in') .
+                                                        '&check_out=' .
+                                                        request('check_out');
+                                                }
+                                            @endphp
+                                            <a href="{{ $viewUrl }}"
                                                 class="flex-1 text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
                                                 View Details
                                             </a>
@@ -158,11 +199,17 @@
                             @endforeach
                         </div>
                         <div class="mt-6">
-                            {{ $properties->links() }}
+                            {{ $properties->appends(request()->query())->links() }}
                         </div>
                     @else
                         <div class="text-center py-8">
-                            <p class="text-gray-500 dark:text-gray-400 mb-4">No properties found.</p>
+                            <p class="text-gray-500 dark:text-gray-400 mb-4">
+                                @if (request()->hasAny(['city', 'property_type', 'status', 'check_in', 'check_out']))
+                                    No properties found matching your criteria.
+                                @else
+                                    No properties found.
+                                @endif
+                            </p>
                             @if (auth()->user()->hasPermission('create_property'))
                                 <a href="{{ route('properties.create') }}"
                                     class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">
@@ -175,4 +222,19 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const checkInInput = document.getElementById('check_in');
+        const checkOutInput = document.getElementById('check_out');
+
+        checkInInput.addEventListener('change', function() {
+            const checkInDate = new Date(this.value);
+            checkInDate.setDate(checkInDate.getDate() + 1);
+            checkOutInput.min = checkInDate.toISOString().split('T')[0];
+
+            if (checkOutInput.value && new Date(checkOutInput.value) <= new Date(this.value)) {
+                checkOutInput.value = '';
+            }
+        });
+    </script>
 </x-app-layout>

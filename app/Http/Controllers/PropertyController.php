@@ -14,8 +14,7 @@ class PropertyController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Property::with(['photos', 'owner'])
-            ->where('status', 'available');
+        $query = Property::with(['photos', 'owner']);
 
         // Filters
         if ($request->filled('city')) {
@@ -28,6 +27,21 @@ class PropertyController extends Controller
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        // Date availability filter
+        if ($request->filled('check_in') && $request->filled('check_out')) {
+            $checkIn = $request->check_in;
+            $checkOut = $request->check_out;
+
+            // Exclude properties that have conflicting bookings
+            $query->whereDoesntHave('bookings', function ($q) use ($checkIn, $checkOut) {
+                $q->whereIn('booking_status', ['confirmed', 'pending'])
+                    ->where(function ($q2) use ($checkIn, $checkOut) {
+                        $q2->where('check_in_date', '<', $checkOut)
+                            ->where('check_out_date', '>', $checkIn);
+                    });
+            });
         }
 
         $properties = $query->paginate(10);
@@ -243,6 +257,36 @@ class PropertyController extends Controller
         $photo->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Get blocked dates for a property (API endpoint for calendar)
+     */
+    public function getBlockedDates($id)
+    {
+        $property = Property::findOrFail($id);
+
+        // Get all confirmed and pending bookings for this property
+        $bookings = $property->bookings()
+            ->whereIn('status', ['confirmed', 'pending'])
+            ->get(['check_in_date', 'check_out_date']);
+
+        $blockedDates = [];
+
+        foreach ($bookings as $booking) {
+            $start = new \DateTime($booking->check_in_date);
+            $end = new \DateTime($booking->check_out_date);
+
+            // Add all dates in the range (excluding checkout date)
+            while ($start < $end) {
+                $blockedDates[] = $start->format('Y-m-d');
+                $start->modify('+1 day');
+            }
+        }
+
+        return response()->json([
+            'blocked_dates' => array_unique($blockedDates)
+        ]);
     }
 
     /**

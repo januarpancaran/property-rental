@@ -31,8 +31,8 @@
             <!-- Filters -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('properties.index') }}"
-                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <form method="GET" action="{{ route('properties.my.index') }}" id="filterForm"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
                             <input type="text" name="city" value="{{ request('city') }}"
@@ -40,42 +40,50 @@
                                 placeholder="Search by city">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property
-                                Type</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property Type</label>
                             <select name="property_type"
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                                 <option value="">All Types</option>
-                                <option value="apartment"
-                                    {{ request('property_type') == 'apartment' ? 'selected' : '' }}>Apartment</option>
-                                <option value="house" {{ request('property_type') == 'house' ? 'selected' : '' }}>House
-                                </option>
-                                <option value="condo" {{ request('property_type') == 'condo' ? 'selected' : '' }}>Condo
-                                </option>
-                                <option value="townhouse"
-                                    {{ request('property_type') == 'townhouse' ? 'selected' : '' }}>Townhouse</option>
-                                <option value="studio" {{ request('property_type') == 'studio' ? 'selected' : '' }}>
-                                    Studio</option>
+                                <option value="apartment" {{ request('property_type') == 'apartment' ? 'selected' : '' }}>Apartment</option>
+                                <option value="house" {{ request('property_type') == 'house' ? 'selected' : '' }}>House</option>
+                                <option value="condo" {{ request('property_type') == 'condo' ? 'selected' : '' }}>Condo</option>
+                                <option value="townhouse" {{ request('property_type') == 'townhouse' ? 'selected' : '' }}>Townhouse</option>
+                                <option value="studio" {{ request('property_type') == 'studio' ? 'selected' : '' }}>Studio</option>
                             </select>
                         </div>
                         <div>
-                            <label
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
                             <select name="status"
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                                 <option value="">All Status</option>
-                                <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>
-                                    Available</option>
-                                <option value="rented" {{ request('status') == 'rented' ? 'selected' : '' }}>Rented
-                                </option>
-                                <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>
-                                    Maintenance</option>
+                                <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
+                                <option value="rented" {{ request('status') == 'rented' ? 'selected' : '' }}>Rented</option>
+                                <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
                             </select>
                         </div>
-                        <div class="flex items-end">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available From</label>
+                            <input type="date" name="check_in" id="check_in" value="{{ request('check_in') }}"
+                                min="{{ date('Y-m-d') }}"
+                                class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available To</label>
+                            <input type="date" name="check_out" id="check_out" value="{{ request('check_out') }}"
+                                min="{{ request('check_in') ?: date('Y-m-d', strtotime('+1 day')) }}"
+                                class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        </div>
+                        <div class="lg:col-span-5 flex gap-2">
                             <button type="submit"
-                                class="w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                                 Filter
                             </button>
+                            @if (request()->hasAny(['city', 'property_type', 'status', 'check_in', 'check_out']))
+                                <a href="{{ route('properties.my.index') }}"
+                                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                                    Clear Filters
+                                </a>
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -173,4 +181,21 @@
             </div>
         </div>
     </div>
+    
+    <script>
+    const checkInInput = document.getElementById('check_in');
+    const checkOutInput = document.getElementById('check_out');
+
+    if (checkInInput && checkOutInput) {
+        checkInInput.addEventListener('change', function() {
+            const checkInDate = new Date(this.value);
+            checkInDate.setDate(checkInDate.getDate() + 1);
+            checkOutInput.min = checkInDate.toISOString().split('T')[0];
+
+            if (checkOutInput.value && new Date(checkOutInput.value) <= new Date(this.value)) {
+                checkOutInput.value = '';
+            }
+        });
+    }
+    </script>
 </x-app-layout>
