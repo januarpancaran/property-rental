@@ -71,7 +71,7 @@ php artisan serve
 php artisan queue:work
 ngrok http 8000
 
-# Or run both at the same time
+# Or run all at the same time
 npx concurrently "npm run dev" "php artisan serve" "php artisan queue:work" "ngrok http 8000"
 ```
 
