@@ -54,14 +54,16 @@
                                                     </p>
                                                 </div>
                                                 <div class="flex gap-2">
-                                                    <span class="px-3 py-1 text-xs rounded capitalize
+                                                    <span
+                                                        class="px-3 py-1 text-xs rounded capitalize
                                                                 @if ($booking->booking_status === 'confirmed') bg-green-500 text-white
                                                                 @elseif($booking->booking_status === 'pending') bg-yellow-500 text-white
                                                                 @elseif($booking->booking_status === 'cancelled') bg-red-500 text-white
                                                                 @else bg-blue-500 text-white @endif">
                                                         {{ $booking->booking_status }}
                                                     </span>
-                                                    <span class="px-3 py-1 text-xs rounded capitalize
+                                                    <span
+                                                        class="px-3 py-1 text-xs rounded capitalize
                                                                 @if ($booking->payment_status === 'paid') bg-green-500 text-white
                                                                 @elseif($booking->payment_status === 'unpaid') bg-red-500 text-white
                                                                 @else bg-yellow-500 text-white @endif">
@@ -97,8 +99,29 @@
                                             </div>
 
                                             <div class="flex justify-end gap-2 mt-8">
-                                                @if (in_array($booking->booking_status, ['pending']))
-                                                    <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
+                                                @if ($booking->booking_status === 'pending' && $booking->payment_status === 'unpaid')
+                                                    @if ($booking->order && $booking->order->payment_status === 'pending' && !$booking->order->isExpired())
+                                                        <a href="{{ route('orders.waiting', $booking->order) }}"
+                                                            class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded text-sm">
+                                                            Continue Payment
+                                                        </a>
+                                                    @elseif($booking->order && $booking->order->isExpired())
+                                                        <span
+                                                            class="bg-gray-500 text-white font-bold py-2 px-4 rounded text-sm cursor-not-allowed">
+                                                            Payment Expired
+                                                        </span>
+                                                    @else
+                                                        {{-- No order yet? Shouldn't happen, but fallback --}}
+                                                        <a href="{{ route('orders.confirm', $booking) }}"
+                                                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded text-sm">
+                                                            Pay Now
+                                                        </a>
+                                                    @endif
+                                                @endif
+
+                                                @if ($booking->booking_status === 'pending' && !$booking->isPaid())
+                                                    <form action="{{ route('bookings.cancel', $booking) }}"
+                                                        method="POST"
                                                         onsubmit="return confirm('Are you sure you want to cancel this booking?');">
                                                         @csrf
                                                         <button type="submit"
@@ -107,6 +130,7 @@
                                                         </button>
                                                     </form>
                                                 @endif
+
                                                 <a href="{{ route('bookings.show', $booking) }}"
                                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
                                                     View Details

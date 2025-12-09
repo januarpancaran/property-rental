@@ -181,48 +181,99 @@
                 </div>
             @endif
 
-            <!-- Actions -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Actions</h3>
-                    <div class="flex gap-3">
-                        <!-- Landlord Actions -->
-                        @if ($booking->property->user_id === auth()->id())
-                            @if ($booking->booking_status === 'pending')
-                                <form action="{{ route('bookings.confirm', $booking) }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                        Confirm Booking
-                                    </button>
-                                </form>
+            @php
+                $isTenant = auth()->id() === $booking->user_id;
+                $isLandlord = auth()->id() === $booking->property->user_id;
+                $isAdmin = auth()->user()->isAdmin();
+
+                // Determine if any action should be shown
+                $showActions = false;
+
+                if ($isAdmin) {
+                    $showActions = in_array($booking->booking_status, ['pending', 'confirmed']);
+                } elseif ($isLandlord) {
+                    // Landlord can: confirm (if pending), complete (if confirmed), or cancel (if pending)
+                    if ($booking->booking_status === 'pending') {
+                        $showActions = true; // confirm + cancel
+                    } elseif ($booking->booking_status === 'confirmed') {
+                        $showActions = true; // complete
+                    }
+                } elseif ($isTenant) {
+                    // Tenant can only cancel (if pending + unpaid)
+                    if ($booking->booking_status === 'pending' && !$booking->isPaid()) {
+                        $showActions = true; // cancel
+                    }
+                }
+            @endphp
+
+            {{-- Actions Section --}}
+            @if ($showActions)
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Actions</h3>
+                        <div class="flex gap-3 flex-wrap">
+                            <!-- Landlord Actions -->
+                            @if ($isLandlord)
+                                @if ($booking->booking_status === 'pending')
+                                    <form action="{{ route('bookings.confirm', $booking) }}" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                            Confirm Booking
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if ($booking->booking_status === 'confirmed')
+                                    <form action="{{ route('bookings.complete', $booking) }}" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                            Mark as Completed
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
 
-                            @if ($booking->booking_status === 'confirmed')
-                                <form action="{{ route('bookings.complete', $booking) }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                        Mark as Completed
-                                    </button>
-                                </form>
+                            <!-- Cancel Button (conditionally shown per role) -->
+                            @if ($isAdmin)
+                                @if (in_array($booking->booking_status, ['pending', 'confirmed']))
+                                    <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        @csrf
+                                        <button type="submit"
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            Cancel Booking
+                                        </button>
+                                    </form>
+                                @endif
+                            @elseif($isTenant)
+                                @if ($booking->booking_status === 'pending' && !$booking->isPaid())
+                                    <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        @csrf
+                                        <button type="submit"
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            Cancel Booking
+                                        </button>
+                                    </form>
+                                @endif
+                            @elseif($isLandlord)
+                                @if ($booking->booking_status === 'pending')
+                                    <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        @csrf
+                                        <button type="submit"
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            Cancel Booking
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
-                        @endif
-
-                        <!-- Cancel Button (Both Tenant and Landlord) -->
-                        @if (in_array($booking->booking_status, ['pending', 'confirmed']))
-                            <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
-                                onsubmit="return confirm('Are you sure you want to cancel this booking?');">
-                                @csrf
-                                <button type="submit"
-                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                    Cancel Booking
-                                </button>
-                            </form>
-                        @endif
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

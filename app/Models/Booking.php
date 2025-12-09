@@ -50,6 +50,17 @@ class Booking extends Model
         return $this->hasOne(Contract::class);
     }
 
+    // Relationship with order
+    public function order()
+    {
+        return $this->hasOne(Order::class);
+    }
+
+    public function hasPendingOrder()
+    {
+        return $this->order && $this->order->status === 'pending' && !$this->order->isExpired();
+    }
+
     // Scopes
     public function scopePending($query)
     {

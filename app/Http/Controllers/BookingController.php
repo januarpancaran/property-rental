@@ -18,7 +18,7 @@ class BookingController extends Controller
     public function index()
     {
         $bookings = Auth::user()->bookings()
-            ->with(['property.photos', 'property.owner'])
+            ->with(['property.photos', 'property.owner', 'order'])
             ->latest()
             ->paginate(10);
 
@@ -214,6 +214,28 @@ class BookingController extends Controller
      */
     public function cancel(Request $request, Booking $booking)
     {
+        $user = Auth::user();
+
+        $isTenant = $booking->user_id === $user->id;
+        $isLandlord = $booking->property->user_id === $user->id;
+        $isAdmin = $user->isAdmin();
+
+        if ($isAdmin) {
+            if (!in_array($booking->booking_status, ['pending', 'confirmed'])) {
+                return redirect()->back()->withErrors(['booking' => 'This booking cannot be cancelled.']);
+            }
+        } elseif ($isTenant) {
+            if (!($booking->booking_status === 'pending' && !$booking->isPaid())) {
+                abort(403, 'You can only cancel unpaid pending bookings.');
+            }
+        } elseif ($isLandlord) {
+            if ($booking->booking_status !== 'pending') {
+                abort(403, 'You cannot cancel a confirmed booking.');
+            }
+        } else {
+            abort(403, 'Unauthorized to cancel this booking');
+        }
+
         // Check if user can cancel this booking
         $canCancel = $booking->user_id === Auth::id() ||
             $booking->property->user_id === Auth::id() ||

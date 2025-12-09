@@ -175,7 +175,7 @@
                                                     </form>
                                                 @endif
 
-                                                @if (in_array($booking->booking_status, ['pending', 'confirmed']))
+                                                @if ($booking->booking_status === 'pending')
                                                     <form action="{{ route('bookings.cancel', $booking) }}"
                                                         method="POST" class="inline"
                                                         onsubmit="return confirm('Cancel this booking?');">
