@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Kelola Permintaan: ') . $maintenance->title }}
+            {{ __('Manage Request: ') . $maintenance->title }}
         </h2>
     </x-slot>
 
@@ -23,8 +23,7 @@
                     </div>
                 @endif
                 @if ($errors->any())
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                        role="alert">
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                         <ul class="list-disc ml-5">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -33,43 +32,58 @@
                     </div>
                 @endif
 
-                <h3 class="text-2xl font-bold border-b border-gray-200 dark:border-gray-700 pb-2">Detail Permintaan</h3>
+                <h3 class="text-2xl font-bold border-b border-gray-200 dark:border-gray-700 pb-2">Request Details</h3>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Properti:</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Property:</p>
                         <p class="text-lg font-semibold">{{ $maintenance->property->title }}</p>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Diajukan Oleh:</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Submitted By:</p>
                         <p class="text-lg">{{ $maintenance->user->full_name }}</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Status:</p>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-lg font-bold"
-                            style="background-color: {{ match ($maintenance->status_color) {'red' => 'rgba(252, 165, 165, 0.5)','blue' => 'rgba(147, 197, 253, 0.5)','yellow' => 'rgba(250, 240, 153, 0.5)','green' => 'rgba(167, 243, 208, 0.5)',default => 'rgba(209, 213, 219, 0.5)'} }};
-                                     color: {{ match ($maintenance->status_color) {'red' => 'rgb(185, 28, 28)','blue' => 'rgb(29, 78, 216)','yellow' => 'rgb(159, 90, 31)','green' => 'rgb(4, 120, 87)',default => 'rgb(75, 85, 99)'} }};">
+                        @php
+                            $statusClasses = match ($maintenance->status) {
+                                'pending' => 'bg-yellow-100 text-yellow-800',
+                                'in_progress' => 'bg-blue-100 text-blue-800',
+                                'completed' => 'bg-green-100 text-green-800',
+                                'cancelled' => 'bg-red-100 text-red-800',
+                                default => 'bg-gray-100 text-gray-800'
+                            };
+                        @endphp
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-lg font-bold {{ $statusClasses }}">
                             {{ ucfirst(str_replace('_', ' ', $maintenance->status)) }}
                         </span>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Prioritas:</p>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-lg font-bold"
-                            style="background-color: {{ match ($maintenance->priority_color) {'red' => 'rgba(252, 165, 165, 0.5)','orange' => 'rgba(251, 191, 36, 0.5)','yellow' => 'rgba(250, 240, 153, 0.5)','green' => 'rgba(167, 243, 208, 0.5)',default => 'rgba(209, 213, 219, 0.5)'} }};
-                                     color: {{ match ($maintenance->priority_color) {'red' => 'rgb(185, 28, 28)','orange' => 'rgb(180, 83, 9)','yellow' => 'rgb(159, 90, 31)','green' => 'rgb(4, 120, 87)',default => 'rgb(75, 85, 99)'} }};">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Priority:</p>
+                        @php
+                            $priorityClasses = match ($maintenance->priority) {
+                                'urgent' => 'bg-red-100 text-red-800',
+                                'high' => 'bg-orange-100 text-orange-800',
+                                'medium' => 'bg-yellow-100 text-yellow-800',
+                                'low' => 'bg-green-100 text-green-800',
+                                default => 'bg-gray-100 text-gray-800'
+                            };
+                        @endphp
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-lg font-bold {{ $priorityClasses }}">
                             {{ ucfirst($maintenance->priority) }}
                         </span>
                     </div>
                 </div>
 
                 <div class="pt-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Deskripsi Detail:</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Detailed Description:</p>
                     <p class="whitespace-pre-wrap">{{ $maintenance->description }}</p>
                 </div>
 
-
-                <h3 class="text-xl font-bold border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">Manajemen &
-                    Penugasan</h3>
+                <h3 class="text-xl font-bold border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">Management &
+                    Assignment</h3>
 
                 <form method="POST" action="{{ route('manage.maintenances.update', $maintenance) }}">
                     @csrf
@@ -77,33 +91,34 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <x-input-label for="scheduled_date" :value="__('Jadwal Perbaikan')" />
+                            <x-input-label for="scheduled_date" :value="__('Scheduled Date')" />
                             <x-text-input id="scheduled_date" class="block mt-1 w-full" type="date"
                                 name="scheduled_date" :value="old('scheduled_date', $maintenance->scheduled_date?->format('Y-m-d'))" />
                             <x-input-error :messages="$errors->get('scheduled_date')" class="mt-2" />
                         </div>
 
                         <div>
-                            <x-input-label for="assigned_to" :value="__('Ditugaskan Kepada (Nama Teknisi)')" />
+                            <x-input-label for="assigned_to" :value="__('Assigned To (Technician Name)')" />
                             <x-text-input id="assigned_to" class="block mt-1 w-full" type="text" name="assigned_to"
                                 :value="old('assigned_to', $maintenance->assigned_to)" />
                             <x-input-error :messages="$errors->get('assigned_to')" class="mt-2" />
                         </div>
 
                         <div>
-                            <x-input-label for="estimated_cost" :value="__('Perkiraan Biaya (Rp)')" />
+                            <x-input-label for="estimated_cost" :value="__('Estimated Cost (Rp)')" />
                             <x-text-input id="estimated_cost" class="block mt-1 w-full" type="number" step="1000"
                                 name="estimated_cost" :value="old('estimated_cost', $maintenance->estimated_cost)" />
                             <x-input-error :messages="$errors->get('estimated_cost')" class="mt-2" />
                         </div>
 
                         <div>
-                            <x-input-label for="status" :value="__('Ubah Status')" />
+                            <x-input-label for="status" :value="__('Update Status')" />
                             <select id="status" name="status"
                                 class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                                 @foreach (['pending', 'in_progress', 'completed', 'cancelled'] as $status)
                                     <option value="{{ $status }}" @selected($maintenance->status == $status)>
-                                        {{ ucfirst(str_replace('_', ' ', $status)) }}</option>
+                                        {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                    </option>
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('status')" class="mt-2" />
@@ -112,37 +127,37 @@
 
                     <div class="flex items-center justify-end mt-6">
                         <x-primary-button>
-                            {{ __('Update Manajemen') }}
+                            {{ __('Update Management') }}
                         </x-primary-button>
                     </div>
                 </form>
 
                 <div class="flex justify-start space-x-4 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
-                    {{-- @can('complete_maintenance') --}}
                     @if (!$maintenance->isCompleted() && !$maintenance->isCancelled())
                         <form method="POST" action="{{ route('manage.maintenances.complete', $maintenance) }}">
                             @csrf
                             <button type="submit"
-                                onclick="return confirm('Apakah Anda yakin ingin menandai permintaan ini sebagai SELESAI?')"
+                                onclick="return confirm('Are you sure you want to mark this request as COMPLETED?')"
                                 class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-                                Tandai Selesai
+                                Mark as Completed
                             </button>
                         </form>
-                    @endif
-                    {{-- @endcan --}}
 
-                    {{-- @can('complete_maintenance') --}}
-                    @if (!$maintenance->isCompleted() && !$maintenance->isCancelled())
                         <form method="POST" action="{{ route('manage.maintenances.cancel', $maintenance) }}">
                             @csrf
-                            <button type="submit"
-                                onclick="return confirm('Apakah Anda yakin ingin MEMBATALKAN permintaan ini?')"
+                            <button type="submit" onclick="return confirm('Are you sure you want to CANCEL this request?')"
                                 class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
-                                Batalkan Permintaan
+                                Cancel Request
                             </button>
                         </form>
                     @endif
-                    {{-- @endcan --}}
+                </div>
+
+                <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
+                    <a href="{{ route('manage.maintenances.index') }}"
+                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
+                        &larr; Back to List
+                    </a>
                 </div>
 
             </div>

@@ -7,22 +7,24 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Notifications\MaintenanceCreatedNotification;
+use App\Notifications\MaintenanceUpdatedNotification;
+use App\Notifications\MaintenanceCompletedNotification;
+use App\Notifications\MaintenanceCancelledNotification;
 
 class MaintenanceController extends Controller
 {
     /**
-     * Tampilan daftar untuk Tenant (Hanya permintaan mereka sendiri)
+     * Display a listing of maintenance requests for tenants (only their own).
      */
     public function indexTenant()
     {
-        // Tenant hanya bisa melihat permintaan yang mereka buat (user_id mereka)
         $maintenances = Auth::user()->maintenances()->latest()->paginate(10);
-
         return view('maintenances.tenant.index', compact('maintenances'));
     }
 
     /**
-     * Tampilan daftar untuk Admin/Landlord (Manajemen)
+     * Display a listing for admin/landlord (management view).
      */
     public function indexManage()
     {
@@ -30,27 +32,22 @@ class MaintenanceController extends Controller
         $query = Maintenance::latest();
 
         if ($user->isLandlord()) {
-            // Landlord hanya melihat permintaan dari properti yang mereka miliki
             $propertyIds = $user->properties()->pluck('id');
             $query->whereIn('property_id', $propertyIds);
         }
-        // Admin melihat semua (default query)
 
         $maintenances = $query->paginate(10);
-
         return view('maintenances.manage.index', compact('maintenances'));
     }
 
     /**
-     * Tampilkan form pembuatan permintaan baru
+     * Show the form to create a new maintenance request.
      */
     public function create()
     {
         $user = Auth::user();
 
-        // Ambil properti yang disewa/dimiliki user saat ini
         if ($user->isTenant()) {
-            // Asumsi properti disewa melalui activeContracts()
             $properties = Property::whereIn('id', $user->activeBookings()->pluck('property_id'))->get();
         } elseif ($user->isLandlord()) {
             $properties = $user->properties;
@@ -62,7 +59,7 @@ class MaintenanceController extends Controller
     }
 
     /**
-     * Simpan permintaan perawatan baru
+     * Store a new maintenance request.
      */
     public function store(Request $request)
     {
@@ -72,7 +69,6 @@ class MaintenanceController extends Controller
             'property_id' => [
                 'required',
                 'exists:properties,id',
-                // Pastikan tenant hanya bisa request untuk properti yang mereka sewa/tempati
                 Rule::in($user->isTenant() ? $user->activeBookings()->pluck('property_id')->toArray() : Property::pluck('id')->toArray()),
             ],
             'title' => 'required|string|max:255',
@@ -81,7 +77,7 @@ class MaintenanceController extends Controller
             'priority' => ['required', 'string', Rule::in(['low', 'medium', 'high', 'urgent'])],
         ]);
 
-        Maintenance::create([
+        $maintenance = Maintenance::create([
             'user_id' => $user->id,
             'status' => 'pending',
             'property_id' => $validated['property_id'],
@@ -91,49 +87,47 @@ class MaintenanceController extends Controller
             'priority' => $validated['priority'],
         ]);
 
-        // TODO: Trigger notifikasi ke Landlord/Admin
-        return redirect()->route('tenant.maintenances.index')->with('success', 'Permintaan perawatan berhasil diajukan!');
+        // Notify landlord (property owner)
+        $landlord = $maintenance->property->owner;
+        $landlord->notify(new MaintenanceCreatedNotification($maintenance));
+
+        // Optional: Notify admin if you want system-wide alerts
+
+        return redirect()->route('tenant.maintenances.index')
+            ->with('success', 'Maintenance request submitted successfully!');
     }
 
     /**
-     * Tampilan detail untuk Tenant (hanya milik sendiri)
+     * Show maintenance detail for tenant (own requests only).
      */
     public function showTenant(Maintenance $maintenance)
     {
-        // Otorisasi: Pastikan permintaan milik user yang sedang login
         if ($maintenance->user_id !== Auth::id()) {
-            abort(403, 'Anda tidak memiliki akses ke permintaan ini.');
+            abort(403, 'You do not have access to this maintenance request.');
         }
-
         return view('maintenances.tenant.show', compact('maintenance'));
     }
 
     /**
-     * Tampilan detail untuk Admin/Landlord (manajemen)
+     * Show maintenance detail for admin/landlord.
      */
     public function showManage(Maintenance $maintenance)
     {
         $user = Auth::user();
-
-        // Otorisasi Landlord: Pastikan properti milik Landlord
         if ($user->isLandlord() && $maintenance->property->user_id !== $user->id) {
-            abort(403, 'Anda tidak memiliki akses ke permintaan perawatan properti ini.');
+            abort(403, 'You do not have access to this property\'s maintenance requests.');
         }
-        // Admin bisa melihat semua, sudah di-handle oleh middleware can:view_property_maintenance
-
         return view('maintenances.manage.show', compact('maintenance'));
     }
 
-
     /**
-     * Update status, jadwal, atau penugasan (Hanya untuk Admin/Landlord)
+     * Update maintenance request (status, schedule, etc.) – for admin/landlord only.
      */
     public function update(Request $request, Maintenance $maintenance)
     {
-        // Otorisasi Landlord: Pastikan properti milik Landlord
         $user = Auth::user();
         if ($user->isLandlord() && $maintenance->property->user_id !== $user->id) {
-            abort(403, 'Anda tidak berwenang mengelola permintaan perawatan properti ini.');
+            abort(403, 'You are not authorized to manage this maintenance request.');
         }
 
         $validated = $request->validate([
@@ -143,7 +137,6 @@ class MaintenanceController extends Controller
             'estimated_cost' => 'nullable|numeric|min:0',
         ]);
 
-        // Gunakan helper methods di model
         if (isset($validated['scheduled_date']) || isset($validated['assigned_to'])) {
             $maintenance->schedule(
                 $validated['scheduled_date'] ?? $maintenance->scheduled_date,
@@ -151,51 +144,59 @@ class MaintenanceController extends Controller
             );
         }
 
-        // Update status umum dan biaya
         $maintenance->update(array_filter([
             'status' => $validated['status'] ?? null,
             'estimated_cost' => $validated['estimated_cost'] ?? null,
         ]));
 
-        // TODO: Trigger notifikasi ke Tenant
-        return back()->with('success', 'Permintaan perawatan berhasil diperbarui.');
+        // Notify tenant about update
+        $tenant = $maintenance->user;
+        $tenant->notify(new MaintenanceUpdatedNotification($maintenance));
+
+        return back()->with('success', 'Maintenance request updated successfully.');
     }
 
     /**
-     * Tandai sebagai Selesai (Completed)
+     * Mark maintenance as completed.
      */
     public function complete(Maintenance $maintenance)
     {
-        // Otorisasi: Dibatasi oleh middleware can:complete_maintenance
         if (Auth::user()->isLandlord() && $maintenance->property->user_id !== Auth::id()) {
-            abort(403, 'Anda tidak berwenang mengelola permintaan perawatan properti ini.');
+            abort(403, 'You are not authorized to manage this maintenance request.');
         }
 
         if (!$maintenance->isCompleted()) {
             $maintenance->markCompleted();
-            // TODO: Trigger notifikasi penyelesaian ke Tenant
-            return back()->with('success', 'Permintaan perawatan berhasil ditandai sebagai Selesai.');
+
+            // Notify tenant
+            $tenant = $maintenance->user;
+            $tenant->notify(new MaintenanceCompletedNotification($maintenance));
+
+            return back()->with('success', 'Maintenance request marked as completed.');
         }
 
-        return back()->with('warning', 'Permintaan perawatan sudah Selesai.');
+        return back()->with('warning', 'This maintenance request is already completed.');
     }
 
     /**
-     * Batalkan Permintaan (Cancel)
+     * Cancel a maintenance request.
      */
     public function cancel(Maintenance $maintenance)
     {
-        // Otorisasi: Dibatasi oleh middleware can:cancel_maintenance
         if (Auth::user()->isLandlord() && $maintenance->property->user_id !== Auth::id()) {
-            abort(403, 'Anda tidak berwenang mengelola permintaan perawatan properti ini.');
+            abort(403, 'You are not authorized to manage this maintenance request.');
         }
 
         if (!$maintenance->isCancelled()) {
             $maintenance->cancel();
-            // TODO: Trigger notifikasi pembatalan ke Tenant
-            return back()->with('success', 'Permintaan perawatan berhasil dibatalkan.');
+
+            // Notify tenant
+            $tenant = $maintenance->user;
+            $tenant->notify(new MaintenanceCancelledNotification($maintenance));
+
+            return back()->with('success', 'Maintenance request cancelled successfully.');
         }
 
-        return back()->with('warning', 'Permintaan perawatan sudah dibatalkan.');
+        return back()->with('warning', 'This maintenance request is already cancelled.');
     }
 }
