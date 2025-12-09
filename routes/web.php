@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminBookingController;
+use App\Http\Controllers\AdminPropertyController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NotificationsController;
@@ -61,8 +62,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
     // Property Management
     Route::middleware('permission:manage_properties')->group(function () {
-        Route::get('properties', [PropertyController::class, 'adminIndex'])->name('properties.index');
-        Route::delete('properties/{property}', [PropertyController::class, 'destroy'])->name('properties.destroy');
+        Route::resource('properties', AdminPropertyController::class);
+        Route::delete('properties/{photo}/photo', [AdminPropertyController::class, 'deletePhoto'])->name('properties.photo.destroy');
+        Route::get('properties/{property}/availability', [AdminPropertyController::class, 'availability'])->name('properties.availability');
+        Route::post('properties/{property}/block-dates', [AdminPropertyController::class, 'blockDates'])->name('properties.block-dates');
+        Route::post('properties/{property}/set-pricing', [AdminPropertyController::class, 'setPricing'])->name('properties.set-pricing');
     });
 
     // Booking Management
