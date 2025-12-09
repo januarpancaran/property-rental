@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Notifications\BookingCreatedNotification;
+use App\Notifications\BookingConfirmedNotification;
+use App\Notifications\LandlordNewBookingNotification;
 
 class BookingController extends Controller
 {
@@ -141,6 +144,9 @@ class BookingController extends Controller
 
             DB::commit();
 
+            $booking->user->notify(new BookingCreatedNotification($booking));
+            $booking->property->owner->notify(new LandlordNewBookingNotification($booking));
+
             // Redirect to payment confirmation page
             return redirect()->route('orders.confirm', $booking)
                 ->with('success', 'Booking created! Please proceed with payment.');
@@ -200,6 +206,8 @@ class BookingController extends Controller
             $booking->property->update(['status' => 'rented']);
 
             DB::commit();
+
+            $booking->user->notify(new BookingConfirmedNotification($booking));
 
             return redirect()->back()->with('success', 'Booking confirmed successfully!');
         } catch (\Exception $e) {

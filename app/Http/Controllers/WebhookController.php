@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\BookingPaidNotification;
+use App\Notifications\LandlordPaymentReceivedNotification;
 
 class WebhookController extends Controller
 {
@@ -59,6 +61,9 @@ class WebhookController extends Controller
             $booking->update([
                 'payment_status' => 'paid'
             ]);
+
+            $booking->user->notify(new BookingPaidNotification($booking));
+            $booking->property->owner->notify(new LandlordPaymentReceivedNotification($booking));
 
             Log::info('Payment success processed', [
                 'order_id' => $order->id,

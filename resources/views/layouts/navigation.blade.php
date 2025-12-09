@@ -74,6 +74,29 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Notifications Dropdown -->
+                @if (auth()->check())
+                    <div class="hidden sm:flex sm:items-center sm:ms-4">
+                        <div class="relative inline-flex items-center">
+                            <a href="{{ route('notifications.index') }}"
+                                class="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M14.857 17.657c-.387.16-.81.243-1.238.243h-3.238c-.428 0-.851-.083-1.238-.243M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9z" />
+                                </svg>
+                            </a>
+
+                            @if (auth()->user()->unreadNotifications->count())
+                                <span
+                                    class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center pointer-events-none z-10">
+                                    {{ auth()->user()->unreadNotifications->count() }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button

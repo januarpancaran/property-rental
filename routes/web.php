@@ -2,12 +2,13 @@
 
 use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -241,5 +242,8 @@ Route::prefix('orders')->name('orders.')->middleware('auth')->group(function () 
 
 // Webhook Route (no auth middleware)
 Route::post('/webhook/payment', [WebhookController::class, 'handlePayment'])->name('webhook.payment');
+
+// Notifications Route
+Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
 
 require __DIR__ . '/auth.php';
