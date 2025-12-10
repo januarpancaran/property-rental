@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\AdminPropertyController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OrderController;
@@ -23,9 +24,11 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', fn() => view('welcome'));
 Route::get('/', [WelcomeController::class, '__invoke']);
 
-Route::get('/dashboard', fn() => view('dashboard'))
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Route::get('/dashboard', fn() => view('dashboard'))
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
+//     
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------

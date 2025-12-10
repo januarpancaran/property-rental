@@ -14,13 +14,13 @@
 
             <!-- Navigation Links -->
             <div class="hidden space-x-1 sm:-my-px sm:flex flex-1 justify-center">
-                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}
-                </x-nav-link>
+                <!-- <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }} -->
+                <!-- </x-nav-link> -->
 
-                @if (auth()->user()->hasPermission('view_all_properties') && !auth()->user()->isAdmin())
+                @if (auth()->user()->isTenant() && !auth()->user()->isAdmin())
                     <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.index')">
-                        {{ __('Properties') }}
+                        {{  __('Properties') }}
                     </x-nav-link>
                 @endif
 
@@ -61,14 +61,16 @@
                 @endif
 
                 @if (auth()->user()->hasPermission('view_own_maintenance') && !auth()->user()->isAdmin())
-                    <x-nav-link :href="route('tenant.maintenances.index')" :active="request()->routeIs('maintenance.*')">
-                        {{ __('Maintenance') }}
+                    <x-nav-link :href="route('tenant.maintenances.index')"
+                        :active="request()->routeIs('tenant.maintenances.*')">
+                        {{ __('Maintenances') }}
                     </x-nav-link>
                 @endif
 
                 @if (auth()->user()->hasPermission('view_property_maintenance') && !auth()->user()->isAdmin())
-                    <x-nav-link :href="route('manage.maintenances.index')" :active="request()->routeIs('maintenance.*')">
-                        {{ __('Property Maintenance') }}
+                    <x-nav-link :href="route('manage.maintenances.index')"
+                        :active="request()->routeIs('manage.maintenances.*')">
+                        {{ __('Property Maintenances') }}
                     </x-nav-link>
                 @endif
             </div>
