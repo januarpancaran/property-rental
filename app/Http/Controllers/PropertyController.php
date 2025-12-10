@@ -136,7 +136,20 @@ class PropertyController extends Controller
             }
         ]);
 
-        return view('properties.show', compact('property'));
+        $nextAvailableDate = null;
+        if ($property->status !== 'available') {
+            $nextBooking = $property->bookings()
+                ->whereIn('booking_status', ['confirmed', 'pending'])
+                ->orderBy('check_out_date', 'desc')
+                ->first();
+
+            if ($nextBooking) {
+                // Next day after last booking ends
+                $nextAvailableDate = $nextBooking->check_out_date->addDay()->format('d M Y');
+            }
+        }
+
+        return view('properties.show', compact('property', 'nextAvailableDate'));
     }
 
     /**
