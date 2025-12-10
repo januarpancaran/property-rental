@@ -9,22 +9,31 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
                 <a href="{{ $property ? route('properties.show', $property) : route('properties.index') }}"
-                    class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">
-                    ← Back
+                    class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back
                 </a>
             </div>
 
             @if ($property)
                 <!-- Property Info Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-6">
                     <div class="p-6">
                         <div class="flex gap-4">
                             <div class="w-32 h-32 flex-shrink-0">
                                 @if ($property->featuredPhoto)
                                     <img src="{{ $property->featuredPhoto->url }}" alt="{{ $property->title }}"
-                                        class="w-full h-full object-cover rounded">
+                                        class="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-gray-600">
                                 @else
-                                    <div class="w-full h-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                    <div
+                                        class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg flex items-center justify-center text-gray-400">
+                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                        </svg>
+                                    </div>
                                 @endif
                             </div>
                             <div>
@@ -34,7 +43,7 @@
                                 <p class="text-gray-600 dark:text-gray-400 mb-2">
                                     {{ $property->city }}, {{ $property->state }}
                                 </p>
-                                <p class="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                                     Rp {{ number_format($property->rent_amount, 0, ',', '.') }}/month
                                 </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -46,7 +55,7 @@
                 </div>
 
                 <!-- Booking Form -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                     <div class="p-6">
                         <form action="{{ route('bookings.store') }}" method="POST" id="bookingForm">
                             @csrf
@@ -87,13 +96,13 @@
                             <!-- Price Calculation Display -->
                             <div id="priceDisplay" class="mb-4 hidden">
                                 <div
-                                    class="p-4 rounded-lg bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700">
-                                    <div class="text-sm space-y-1 text-blue-800 dark:text-blue-200">
+                                    class="p-4 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700">
+                                    <div class="text-sm space-y-1 text-indigo-800 dark:text-indigo-200">
                                         <p>Number of Nights: <span id="nightsCount" class="font-semibold"></span></p>
                                         <p>Daily Rate: <span id="dailyRate" class="font-semibold">Rp
                                                 {{ number_format($property->rent_amount / 30, 0, ',', '.') }}</span>
                                         </p>
-                                        <p class="text-lg font-bold pt-2 border-t border-blue-200 dark:border-blue-700">
+                                        <p class="text-lg font-bold pt-2 border-t border-indigo-200 dark:border-indigo-700">
                                             Total Amount: <span id="totalAmount"></span>
                                         </p>
                                     </div>
@@ -101,8 +110,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="notes"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Additional Notes (Optional)
                                 </label>
                                 <textarea name="notes" id="notes" rows="3"
@@ -115,11 +123,15 @@
 
                             <div class="flex items-center justify-end gap-3">
                                 <a href="{{ route('properties.show', $property) }}"
-                                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                    class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition">
                                     Cancel
                                 </a>
                                 <button type="submit" id="submitBtn"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                    class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
                                     Book Now
                                 </button>
                             </div>
@@ -127,11 +139,15 @@
                     </div>
                 </div>
             @else
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                     <div class="p-6 text-center">
                         <p class="text-gray-500 dark:text-gray-400">Please select a property first.</p>
                         <a href="{{ route('properties.index') }}"
-                            class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
                             Browse Properties
                         </a>
                     </div>
@@ -242,7 +258,7 @@
             }
 
             // Update min date for check-out when check-in changes
-            checkInInput.addEventListener('change', function() {
+            checkInInput.addEventListener('change', function () {
                 const checkInDate = new Date(this.value);
                 checkInDate.setDate(checkInDate.getDate() + 1);
                 checkOutInput.min = checkInDate.toISOString().split('T')[0];
@@ -254,14 +270,14 @@
                 validateDates();
             });
 
-            checkOutInput.addEventListener('change', function() {
+            checkOutInput.addEventListener('change', function () {
                 validateDates();
             });
 
             // Add custom validation for date picker (disable blocked dates)
             function addDateValidation() {
                 [checkInInput, checkOutInput].forEach(input => {
-                    input.addEventListener('input', function(e) {
+                    input.addEventListener('input', function (e) {
                         const selectedDate = e.target.value;
                         if (selectedDate && isDateBlocked(selectedDate)) {
                             e.target.value = '';
