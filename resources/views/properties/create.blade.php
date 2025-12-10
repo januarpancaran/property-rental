@@ -8,12 +8,12 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
-                <a href="{{ route('properties.index') }}"
+                <a href="{{ route('properties.my.index') }}"
                     class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
-                    Back to Properties
+                    Back to My Properties
                 </a>
             </div>
 
@@ -298,7 +298,7 @@
                         <!-- Action Buttons -->
                         <div
                             class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-                            <a href="{{ route('properties.index') }}"
+                            <a href="{{ route('properties.my.index') }}"
                                 class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition">
                                 Cancel
                             </a>

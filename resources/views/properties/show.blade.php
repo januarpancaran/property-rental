@@ -24,6 +24,15 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
+            @if (auth()->user()->id === $property->user_id)
+                <a href="{{ route('properties.my.index') }}"
+                    class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back to My Properties
+                </a>
+            @else
                 <a href="{{ route('properties.index') }}"
                     class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,6 +40,7 @@
                     </svg>
                     Back to Properties
                 </a>
+            @endif
             </div>
 
             <!-- Property Photos -->
@@ -234,10 +244,10 @@
                                         class="block w-full text-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                                         Book Now
                                     </a>
-                                    <button
+                                    <!-- <button
                                         class="block w-full text-center px-6 py-3 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition">
                                         Contact Owner
-                                    </button>
+                                    </button> -->
                                 </div>
                             @elseif ($property->status !== 'available')
                                 <div class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
