@@ -27,10 +27,12 @@
                             </h3>
 
                             <div class="mb-4">
-                                <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="title"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Property Title
                                 </label>
-                                <input type="text" name="title" id="title" value="{{ old('title', $property->title) }}"
+                                <input type="text" name="title" id="title"
+                                    value="{{ old('title', $property->title) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     placeholder="e.g., Modern 2BR Apartment in City Center" required>
                                 @error('title')
@@ -60,13 +62,23 @@
                                     <select name="property_type" id="property_type"
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         required>
-                                        <option value="apartment" {{ old('property_type', $property->property_type) == 'apartment' ? 'selected' : '' }}>Apartment
+                                        <option value="apartment"
+                                            {{ old('property_type', $property->property_type) == 'apartment' ? 'selected' : '' }}>
+                                            Apartment
                                         </option>
-                                        <option value="house" {{ old('property_type', $property->property_type) == 'house' ? 'selected' : '' }}>House</option>
-                                        <option value="condo" {{ old('property_type', $property->property_type) == 'condo' ? 'selected' : '' }}>Condo</option>
-                                        <option value="townhouse" {{ old('property_type', $property->property_type) == 'townhouse' ? 'selected' : '' }}>Townhouse
+                                        <option value="house"
+                                            {{ old('property_type', $property->property_type) == 'house' ? 'selected' : '' }}>
+                                            House</option>
+                                        <option value="condo"
+                                            {{ old('property_type', $property->property_type) == 'condo' ? 'selected' : '' }}>
+                                            Condo</option>
+                                        <option value="townhouse"
+                                            {{ old('property_type', $property->property_type) == 'townhouse' ? 'selected' : '' }}>
+                                            Townhouse
                                         </option>
-                                        <option value="studio" {{ old('property_type', $property->property_type) == 'studio' ? 'selected' : '' }}>Studio</option>
+                                        <option value="studio"
+                                            {{ old('property_type', $property->property_type) == 'studio' ? 'selected' : '' }}>
+                                            Studio</option>
                                     </select>
                                     @error('property_type')
                                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -94,7 +106,8 @@
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Owner & Status</h3>
 
                             <div class="mb-4">
-                                <label for="user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="user_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Owner (User)
                                 </label>
                                 <select name="user_id" id="user_id"
@@ -102,7 +115,8 @@
                                     required>
                                     <option value="">Select Owner</option>
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" {{ old('user_id', $property->user_id) == $user->id ? 'selected' : '' }}>
+                                        <option value="{{ $user->id }}"
+                                            {{ old('user_id', $property->user_id) == $user->id ? 'selected' : '' }}>
                                             {{ $user->full_name }} ({{ $user->email }})
                                         </option>
                                     @endforeach
@@ -113,15 +127,22 @@
                             </div>
 
                             <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="status"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Status
                                 </label>
                                 <select name="status" id="status"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="available" {{ old('status', $property->status) == 'available' ? 'selected' : '' }}>Available</option>
-                                    <option value="rented" {{ old('status', $property->status) == 'rented' ? 'selected' : '' }}>Rented</option>
-                                    <option value="maintenance" {{ old('status', $property->status) == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                                    <option value="available"
+                                        {{ old('status', $property->status) == 'available' ? 'selected' : '' }}>
+                                        Available</option>
+                                    <option value="rented"
+                                        {{ old('status', $property->status) == 'rented' ? 'selected' : '' }}>Rented
+                                    </option>
+                                    <option value="maintenance"
+                                        {{ old('status', $property->status) == 'maintenance' ? 'selected' : '' }}>
+                                        Maintenance</option>
                                 </select>
                                 @error('status')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -134,7 +155,8 @@
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Location</h3>
 
                             <div class="mb-4">
-                                <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="address"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Street Address
                                 </label>
                                 <input type="text" name="address" id="address"
@@ -152,7 +174,8 @@
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         City
                                     </label>
-                                    <input type="text" name="city" id="city" value="{{ old('city', $property->city) }}"
+                                    <input type="text" name="city" id="city"
+                                        value="{{ old('city', $property->city) }}"
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         placeholder="Semarang" required>
                                     @error('city')
@@ -242,13 +265,15 @@
                         <!-- Existing Photos -->
                         @if ($property->photos->count() > 0)
                             <div class="mb-6">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Current Photos</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Current Photos
+                                </h3>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     @foreach ($property->photos as $photo)
                                         <div class="relative group">
                                             <img src="{{ $photo->url }}" alt="{{ $photo->alt_text }}"
                                                 class="w-full h-32 object-cover rounded">
-                                            <form action="{{ route('admin.properties.photo.destroy', $photo) }}" method="POST"
+                                            <form action="{{ route('admin.properties.photo.destroy', $photo) }}"
+                                                method="POST"
                                                 class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition"
                                                 onsubmit="return confirm('Delete this photo?');">
                                                 @csrf
@@ -273,7 +298,8 @@
                                     Upload Additional Photos (Max 10 total)
                                 </label>
                                 <input type="file" name="new_photos[]" id="new_photos" multiple
-                                    accept="image/jpeg,image/png,image/jpg" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
+                                    accept="image/jpeg,image/png,image/jpg"
+                                    class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
                 file:mr-4 file:py-2 file:px-4
                 file:rounded file:border-0
                 file:text-sm file:font-semibold

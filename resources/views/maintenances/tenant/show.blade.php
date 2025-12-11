@@ -47,14 +47,21 @@
                                     'completed' => ['color' => 'green', 'label' => 'Completed', 'icon' => '✓'],
                                     'cancelled' => ['color' => 'red', 'label' => 'Cancelled', 'icon' => '✕'],
                                 ];
-                                $sConfig = $statusConfig[$maintenance->status] ?? ['color' => 'gray', 'label' => ucfirst(str_replace('_', ' ', $maintenance->status)), 'icon' => '○'];
+                                $sConfig = $statusConfig[$maintenance->status] ?? [
+                                    'color' => 'gray',
+                                    'label' => ucfirst(str_replace('_', ' ', $maintenance->status)),
+                                    'icon' => '○',
+                                ];
                                 $priorityConfig = [
                                     'urgent' => ['color' => 'red', 'icon' => '🔴'],
                                     'high' => ['color' => 'orange', 'icon' => '🟠'],
                                     'medium' => ['color' => 'yellow', 'icon' => '🟡'],
                                     'low' => ['color' => 'green', 'icon' => '🟢'],
                                 ];
-                                $pConfig = $priorityConfig[$maintenance->priority] ?? ['color' => 'gray', 'icon' => '⚪'];
+                                $pConfig = $priorityConfig[$maintenance->priority] ?? [
+                                    'color' => 'gray',
+                                    'icon' => '⚪',
+                                ];
                             @endphp
                             <span
                                 class="inline-flex items-center gap-1.5 rounded-full bg-{{ $sConfig['color'] }}-100 px-3 py-1.5 text-xs font-bold text-{{ $sConfig['color'] }}-700 dark:bg-{{ $sConfig['color'] }}-900/40 dark:text-{{ $sConfig['color'] }}-300">

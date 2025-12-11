@@ -76,7 +76,8 @@
 
                             <div class="col-span-1">
                                 <label for="check_in_date"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Check-in Date</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Check-in
+                                    Date</label>
                                 <input type="date" name="check_in_date" id="check_in_date"
                                     value="{{ old('check_in_date') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -91,7 +92,8 @@
 
                             <div class="col-span-1">
                                 <label for="check_out_date"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Check-out Date</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Check-out
+                                    Date</label>
                                 <input type="date" name="check_out_date" id="check_out_date"
                                     value="{{ old('check_out_date') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -106,7 +108,8 @@
 
                             <div class="col-span-1">
                                 <label for="payment_status"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Status</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment
+                                    Status</label>
                                 <select name="payment_status" id="payment_status"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -127,7 +130,8 @@
 
                             <div class="col-span-1">
                                 <label for="booking_status"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Booking Status</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Booking
+                                    Status</label>
                                 <select name="booking_status" id="booking_status"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>

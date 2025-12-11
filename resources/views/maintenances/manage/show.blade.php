@@ -2,8 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -129,7 +128,11 @@
                                         'completed' => ['color' => 'green', 'label' => 'Completed', 'icon' => '✓'],
                                         'cancelled' => ['color' => 'red', 'label' => 'Cancelled', 'icon' => '✕'],
                                     ];
-                                    $sConfig = $statusConfig[$maintenance->status] ?? ['color' => 'gray', 'label' => ucfirst(str_replace('_', ' ', $maintenance->status)), 'icon' => '○'];
+                                    $sConfig = $statusConfig[$maintenance->status] ?? [
+                                        'color' => 'gray',
+                                        'label' => ucfirst(str_replace('_', ' ', $maintenance->status)),
+                                        'icon' => '○',
+                                    ];
                                 @endphp
                                 <span
                                     class="inline-flex items-center gap-1.5 rounded-full bg-{{ $sConfig['color'] }}-100 px-3 py-1.5 text-xs font-bold text-{{ $sConfig['color'] }}-700 dark:bg-{{ $sConfig['color'] }}-900/40 dark:text-{{ $sConfig['color'] }}-300">
@@ -149,7 +152,10 @@
                                         'medium' => ['color' => 'yellow', 'icon' => '🟡'],
                                         'low' => ['color' => 'green', 'icon' => '🟢'],
                                     ];
-                                    $pConfig = $priorityConfig[$maintenance->priority] ?? ['color' => 'gray', 'icon' => '⚪'];
+                                    $pConfig = $priorityConfig[$maintenance->priority] ?? [
+                                        'color' => 'gray',
+                                        'icon' => '⚪',
+                                    ];
                                 @endphp
                                 <span
                                     class="inline-flex items-center gap-1.5 rounded-full bg-{{ $pConfig['color'] }}-100 px-3 py-1.5 text-xs font-bold text-{{ $pConfig['color'] }}-700 dark:bg-{{ $pConfig['color'] }}-900/40 dark:text-{{ $pConfig['color'] }}-300">
@@ -270,16 +276,19 @@
                                             d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
                                 </span>
-                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-gray-200">Quick
+                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-gray-200">
+                                    Quick
                                     Actions</h3>
                             </div>
                             <div class="flex flex-wrap gap-3">
-                                <form method="POST" action="{{ route('manage.maintenances.complete', $maintenance) }}">
+                                <form method="POST"
+                                    action="{{ route('manage.maintenances.complete', $maintenance) }}">
                                     @csrf
                                     <button type="submit"
                                         onclick="return confirm('Are you sure you want to mark this request as COMPLETED?')"
                                         class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 dark:from-green-700 dark:to-emerald-700">
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
@@ -287,12 +296,14 @@
                                     </button>
                                 </form>
 
-                                <form method="POST" action="{{ route('manage.maintenances.cancel', $maintenance) }}">
+                                <form method="POST"
+                                    action="{{ route('manage.maintenances.cancel', $maintenance) }}">
                                     @csrf
                                     <button type="submit"
                                         onclick="return confirm('Are you sure you want to CANCEL this request?')"
                                         class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 px-4 py-2 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 dark:from-red-700 dark:to-rose-700">
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>

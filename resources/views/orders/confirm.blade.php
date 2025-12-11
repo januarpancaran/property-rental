@@ -158,7 +158,8 @@
                                 </svg>
                             </span>
                             <div>
-                                <p class="text-sm font-bold text-amber-900 dark:text-amber-100">24-Hour Payment Deadline
+                                <p class="text-sm font-bold text-amber-900 dark:text-amber-100">24-Hour Payment
+                                    Deadline
                                 </p>
                                 <p class="mt-1 text-sm text-amber-800 dark:text-amber-200">Complete payment within 24
                                     hours to secure your booking. You'll be redirected to our secure payment gateway.

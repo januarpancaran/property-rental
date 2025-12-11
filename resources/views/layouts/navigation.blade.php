@@ -20,7 +20,7 @@
 
                 @if (auth()->user()->isTenant() && !auth()->user()->isAdmin())
                     <x-nav-link :href="route('properties.index')" :active="request()->routeIs('properties.index')">
-                        {{  __('Properties') }}
+                        {{ __('Properties') }}
                     </x-nav-link>
                 @endif
 
@@ -61,15 +61,13 @@
                 @endif
 
                 @if (auth()->user()->hasPermission('view_own_maintenance') && !auth()->user()->isAdmin())
-                    <x-nav-link :href="route('tenant.maintenances.index')"
-                        :active="request()->routeIs('tenant.maintenances.*')">
+                    <x-nav-link :href="route('tenant.maintenances.index')" :active="request()->routeIs('tenant.maintenances.*')">
                         {{ __('Maintenances') }}
                     </x-nav-link>
                 @endif
 
                 @if (auth()->user()->hasPermission('view_property_maintenance') && !auth()->user()->isAdmin())
-                    <x-nav-link :href="route('manage.maintenances.index')"
-                        :active="request()->routeIs('manage.maintenances.*')">
+                    <x-nav-link :href="route('manage.maintenances.index')" :active="request()->routeIs('manage.maintenances.*')">
                         {{ __('Property Maintenances') }}
                     </x-nav-link>
                 @endif
@@ -83,8 +81,8 @@
                         <div class="relative inline-flex items-center">
                             <a href="{{ route('notifications.index') }}"
                                 class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                    stroke="currentColor" class="h-6 w-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M14.857 17.657c-.387.16-.81.243-1.238.243h-3.238c-.428 0-.851-.083-1.238-.243M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9z" />
                                 </svg>
@@ -126,7 +124,8 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
+                            <x-dropdown-link :href="route('logout')"
+                                onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
@@ -184,15 +183,13 @@
             @endif
 
             @if (auth()->user()->hasPermission('manage_properties'))
-                <x-responsive-nav-link :href="route('admin.properties.index')"
-                    :active="request()->routeIs('admin.properties.*')">
+                <x-responsive-nav-link :href="route('admin.properties.index')" :active="request()->routeIs('admin.properties.*')">
                     {{ __('Properties') }}
                 </x-responsive-nav-link>
             @endif
 
             @if (auth()->user()->hasPermission('manage_all_bookings'))
-                <x-responsive-nav-link :href="route('admin.bookings.index')"
-                    :active="request()->routeIs('admin.bookings.*')">
+                <x-responsive-nav-link :href="route('admin.bookings.index')" :active="request()->routeIs('admin.bookings.*')">
                     {{ __('Bookings') }}
                 </x-responsive-nav-link>
             @endif
@@ -204,15 +201,13 @@
             @endif
 
             @if (auth()->user()->hasPermission('view_own_maintenance') && !auth()->user()->isAdmin())
-                <x-responsive-nav-link :href="route('tenant.maintenances.index')"
-                    :active="request()->routeIs('maintenance.*')">
+                <x-responsive-nav-link :href="route('tenant.maintenances.index')" :active="request()->routeIs('maintenance.*')">
                     {{ __('My Maintenance') }}
                 </x-responsive-nav-link>
             @endif
 
             @if (auth()->user()->hasPermission('view_property_maintenance') && !auth()->user()->isAdmin())
-                <x-responsive-nav-link :href="route('manage.maintenances.index')"
-                    :active="request()->routeIs('maintenance.*')">
+                <x-responsive-nav-link :href="route('manage.maintenances.index')" :active="request()->routeIs('maintenance.*')">
                     {{ __('Property Maintenance') }}
                 </x-responsive-nav-link>
             @endif
@@ -234,7 +229,8 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
+                    <x-responsive-nav-link :href="route('logout')"
+                        onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>

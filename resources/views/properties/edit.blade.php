@@ -103,13 +103,23 @@
                                             class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition"
                                             required>
                                             <option value="">Select Type</option>
-                                            <option value="apartment" {{ old('property_type', $property->property_type) == 'apartment' ? 'selected' : '' }}>Apartment
+                                            <option value="apartment"
+                                                {{ old('property_type', $property->property_type) == 'apartment' ? 'selected' : '' }}>
+                                                Apartment
                                             </option>
-                                            <option value="house" {{ old('property_type', $property->property_type) == 'house' ? 'selected' : '' }}>House</option>
-                                            <option value="condo" {{ old('property_type', $property->property_type) == 'condo' ? 'selected' : '' }}>Condo</option>
-                                            <option value="townhouse" {{ old('property_type', $property->property_type) == 'townhouse' ? 'selected' : '' }}>Townhouse
+                                            <option value="house"
+                                                {{ old('property_type', $property->property_type) == 'house' ? 'selected' : '' }}>
+                                                House</option>
+                                            <option value="condo"
+                                                {{ old('property_type', $property->property_type) == 'condo' ? 'selected' : '' }}>
+                                                Condo</option>
+                                            <option value="townhouse"
+                                                {{ old('property_type', $property->property_type) == 'townhouse' ? 'selected' : '' }}>
+                                                Townhouse
                                             </option>
-                                            <option value="studio" {{ old('property_type', $property->property_type) == 'studio' ? 'selected' : '' }}>Studio</option>
+                                            <option value="studio"
+                                                {{ old('property_type', $property->property_type) == 'studio' ? 'selected' : '' }}>
+                                                Studio</option>
                                         </select>
                                         @error('property_type')
                                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -139,9 +149,15 @@
                                     <select name="status" id="status"
                                         class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition"
                                         required>
-                                        <option value="available" {{ old('status', $property->status) == 'available' ? 'selected' : '' }}>Available</option>
-                                        <option value="rented" {{ old('status', $property->status) == 'rented' ? 'selected' : '' }}>Rented</option>
-                                        <option value="maintenance" {{ old('status', $property->status) == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                                        <option value="available"
+                                            {{ old('status', $property->status) == 'available' ? 'selected' : '' }}>
+                                            Available</option>
+                                        <option value="rented"
+                                            {{ old('status', $property->status) == 'rented' ? 'selected' : '' }}>Rented
+                                        </option>
+                                        <option value="maintenance"
+                                            {{ old('status', $property->status) == 'maintenance' ? 'selected' : '' }}>
+                                            Maintenance</option>
                                     </select>
                                     @error('status')
                                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -399,12 +415,12 @@
             if (!confirm('Are you sure you want to delete this photo?')) return;
 
             fetch(`/properties/photos/${photoId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                }
-            })
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    }
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -422,7 +438,7 @@
 
         let allFiles = []; // Keep track of all selected files
 
-        newPhotosInput.addEventListener('change', function (event) {
+        newPhotosInput.addEventListener('change', function(event) {
             const files = event.target.files;
 
             if (files.length > 0) {
@@ -439,7 +455,7 @@
         });
 
         // Add photos button click handler
-        addPhotosBtn.addEventListener('click', function () {
+        addPhotosBtn.addEventListener('click', function() {
             newPhotosInput.click();
         });
 
@@ -449,18 +465,20 @@
             allFiles.forEach((file, index) => {
                 const reader = new FileReader();
 
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     const wrapper = document.createElement('div');
                     wrapper.classList.add('relative');
 
                     const img = document.createElement('img');
                     img.src = e.target.result;
-                    img.classList.add('w-32', 'h-32', 'object-cover', 'rounded-lg', 'shadow', 'border', 'border-gray-200', 'dark:border-gray-600');
+                    img.classList.add('w-32', 'h-32', 'object-cover', 'rounded-lg', 'shadow', 'border',
+                        'border-gray-200', 'dark:border-gray-600');
 
                     // Add badge for first photo
                     if (index === 0 && {{ $property->photos->count() }} === 0) {
                         const badge = document.createElement('span');
-                        badge.classList.add('absolute', 'top-2', 'left-2', 'bg-indigo-600', 'text-white', 'text-xs', 'px-2', 'py-1', 'rounded-full', 'font-medium');
+                        badge.classList.add('absolute', 'top-2', 'left-2', 'bg-indigo-600', 'text-white',
+                            'text-xs', 'px-2', 'py-1', 'rounded-full', 'font-medium');
                         badge.textContent = 'Featured';
                         wrapper.appendChild(badge);
                     }
@@ -472,7 +490,7 @@
                     removeBtn.classList.add('absolute', 'top-2', 'right-2', 'bg-red-500', 'hover:bg-red-600',
                         'text-white', 'rounded-full', 'w-6', 'h-6', 'flex', 'items-center',
                         'justify-center', 'font-bold', 'text-lg', 'transition');
-                    removeBtn.onclick = function () {
+                    removeBtn.onclick = function() {
                         removeImage(index);
                     };
 

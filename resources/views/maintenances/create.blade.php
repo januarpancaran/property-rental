@@ -48,7 +48,8 @@
                     class="overflow-hidden rounded-2xl bg-white/85 shadow-2xl backdrop-blur-xl dark:bg-gray-900/85 transition-all duration-300 hover:shadow-3xl">
                     <div
                         class="border-b border-blue-100/50 bg-gradient-to-r from-blue-50/80 via-white/70 to-blue-50/50 px-6 py-5 dark:border-blue-900/30 dark:from-blue-950/30 dark:via-gray-900/50 dark:to-blue-950/20">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Fill out the form below to report a
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Fill out the form below to
+                            report a
                             maintenance issue</p>
                     </div>
 
@@ -94,8 +95,7 @@
                             </label>
                             <textarea id="description" name="description" rows="4"
                                 class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-blue-500"
-                                placeholder="Provide details about the issue..."
-                                required>{{ old('description') }}</textarea>
+                                placeholder="Provide details about the issue..." required>{{ old('description') }}</textarea>
                             <x-input-error :messages="$errors->get('description')" class="mt-2" />
                         </div>
 
@@ -139,7 +139,8 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex items-center justify-between border-t border-gray-100 pt-6 dark:border-gray-800">
+                        <div
+                            class="flex items-center justify-between border-t border-gray-100 pt-6 dark:border-gray-800">
                             <a href="{{ route('tenant.maintenances.index') }}"
                                 class="text-sm font-medium text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
                                 Cancel

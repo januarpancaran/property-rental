@@ -27,7 +27,7 @@ Route::get('/', [WelcomeController::class, '__invoke']);
 // Route::get('/dashboard', fn() => view('dashboard'))
 //     ->middleware(['auth', 'verified'])
 //     ->name('dashboard');
-//     
+//
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 /*

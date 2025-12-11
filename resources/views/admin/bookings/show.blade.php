@@ -1,9 +1,10 @@
 <x-app-layout>
     @php
         // Get user's full name (assuming first_name and last_name exist on User model)
-        $userName = optional($booking->user)->first_name . ' ' . optional($booking->user)->last_name;
+$userName = optional($booking->user)->first_name . ' ' . optional($booking->user)->last_name;
 
         // Ensure total_amount is treated as float (though formatting is better handled in model or view)
+
     @endphp
 
     <x-slot name="header">

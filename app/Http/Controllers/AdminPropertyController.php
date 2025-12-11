@@ -96,7 +96,7 @@ class AdminPropertyController extends Controller
     public function show(Property $property)
     {
         $this->authorizeAdmin();
-        $property->load(['photos', 'owner', 'bookings' => fn($q) => $q->with('user')->latest()->limit(5)]);
+        $property->load(['photos', 'owner', 'bookings' => fn ($q) => $q->with('user')->latest()->limit(5)]);
         return view('admin.properties.show', compact('property'));
     }
 
@@ -140,8 +140,9 @@ class AdminPropertyController extends Controller
         if ($request->hasFile('new_photos')) {
             $currentPhotoCount = $property->photos()->count();
             foreach ($request->file('new_photos') as $index => $file) {
-                if ($currentPhotoCount >= 10)
+                if ($currentPhotoCount >= 10) {
                     break;
+                }
                 $fileName = time() . '_' . $index . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('properties/' . $property->id, $fileName, 'public');
                 $property->photos()->create([
