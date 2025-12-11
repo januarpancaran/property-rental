@@ -44,7 +44,32 @@ class PropertyController extends Controller
             });
         }
 
-        $properties = $query->paginate(9);
+        $properties = $query->orderByRaw("CASE status WHEN 'available' THEN 0 WHEN 'maintenance' THEN 1 WHEN 'rented' THEN 2 END")->latest()->paginate(9);
+
+        // Add nextAvailableDate for each property based on search filters
+        $properties->each(function ($property) use ($request) {
+            $nextAvailableDate = null;
+
+            if ($request->filled('check_in') && $request->filled('check_out')) {
+                // If searching with dates, property is available for that range
+                $property->available_for_search = true;
+                $property->status = 'available'; // Display as available for searched dates
+            } else {
+                // If not searching by dates, show when property will be available
+                if ($property->status !== 'available') {
+                    $nextBooking = $property->bookings()
+                        ->whereIn('booking_status', ['confirmed', 'pending'])
+                        ->orderBy('check_out_date', 'desc')
+                        ->first();
+
+                    if ($nextBooking) {
+                        $nextAvailableDate = $nextBooking->check_out_date->addDay()->format('d M Y');
+                    }
+                }
+            }
+
+            $property->nextAvailableDate = $nextAvailableDate;
+        });
 
         return view('properties.index', compact('properties'));
     }
@@ -54,7 +79,7 @@ class PropertyController extends Controller
      */
     public function myProperties(Request $request)
     {
-        $query = Auth::user()->properties()->with(['photos']);
+        $query = Auth::user()->properties()->with(['photos', 'bookings']);
 
         // Apply filters
         if ($request->filled('status')) {
@@ -65,7 +90,25 @@ class PropertyController extends Controller
             $query->where('property_type', $request->property_type);
         }
 
-        $properties = $query->latest()->paginate(12);
+        $properties = $query->orderByRaw("CASE status WHEN 'available' THEN 0 WHEN 'maintenance' THEN 1 WHEN 'rented' THEN 2 END")->latest()->paginate(12);
+
+        // Add nextAvailableDate for each property
+        $properties->each(function ($property) {
+            $nextAvailableDate = null;
+
+            if ($property->status !== 'available') {
+                $nextBooking = $property->bookings()
+                    ->whereIn('booking_status', ['confirmed', 'pending'])
+                    ->orderBy('check_out_date', 'desc')
+                    ->first();
+
+                if ($nextBooking) {
+                    $nextAvailableDate = $nextBooking->check_out_date->addDay()->format('d M Y');
+                }
+            }
+
+            $property->nextAvailableDate = $nextAvailableDate;
+        });
 
         return view('properties.my.index', compact('properties'));
     }
@@ -126,7 +169,7 @@ class PropertyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Property $property)
+    public function show(Request $request, Property $property)
     {
         $property->load([
             'photos',
@@ -137,17 +180,28 @@ class PropertyController extends Controller
         ]);
 
         $nextAvailableDate = null;
-        if ($property->status !== 'available') {
-            $nextBooking = $property->bookings()
-                ->whereIn('booking_status', ['confirmed', 'pending'])
-                ->orderBy('check_out_date', 'desc')
-                ->first();
 
-            if ($nextBooking) {
-                // Next day after last booking ends
-                $nextAvailableDate = $nextBooking->check_out_date->addDay()->format('d M Y');
+        // Check if user is viewing with date range (from search)
+        if ($request->filled('check_in') && $request->filled('check_out')) {
+            // Property is available for the searched dates
+            $property->status = 'available';
+            $property->available_for_search = true;
+        } else {
+            // Show when property will be available if rented
+            if ($property->status !== 'available') {
+                $nextBooking = $property->bookings()
+                    ->whereIn('booking_status', ['confirmed', 'pending'])
+                    ->orderBy('check_out_date', 'desc')
+                    ->first();
+
+                if ($nextBooking) {
+                    // Next day after last booking ends
+                    $nextAvailableDate = $nextBooking->check_out_date->addDay()->format('d M Y');
+                }
             }
         }
+
+        $property->nextAvailableDate = $nextAvailableDate;
 
         return view('properties.show', compact('property', 'nextAvailableDate'));
     }

@@ -108,6 +108,12 @@
                                 </span>
                             </div>
 
+                            @if (request('check_in') && request('check_out'))
+                                <div class="text-sm text-indigo-600 dark:text-indigo-400 mb-4">
+                                    Available for {{ date('M d', strtotime(request('check_in'))) }} - {{ date('M d, Y', strtotime(request('check_out'))) }}
+                                </div>
+                            @endif
+
                             <div class="space-y-4">
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Description</h4>
@@ -238,9 +244,17 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">per month</p>
                             </div>
 
-                            @if (auth()->user()->isTenant() && $property->status === 'available')
+                            @if (auth()->user()->isTenant() && ($property->status === 'available' || (request('check_in') && request('check_out'))))
                                 <div class="space-y-3">
-                                    <a href="{{ route('bookings.create', ['property_id' => $property->id]) }}"
+                                    @php
+                                        $bookingParams = ['property_id' => $property->id];
+                                        if (request('check_in') && request('check_out')) {
+                                            $bookingParams['check_in'] = request('check_in');
+                                            $bookingParams['check_out'] = request('check_out');
+                                        }
+                                        $bookingUrl = route('bookings.create', $bookingParams);
+                                    @endphp
+                                    <a href="{{ $bookingUrl }}"
                                         class="block w-full text-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                                         Book Now
                                     </a>
