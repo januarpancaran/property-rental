@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Notifications\BookingCreatedNotification;
+use App\Notifications\BookingConfirmedNotification;
+use App\Notifications\LandlordNewBookingNotification;
 
 class BookingController extends Controller
 {
@@ -18,7 +21,7 @@ class BookingController extends Controller
     public function index()
     {
         $bookings = Auth::user()->bookings()
-            ->with(['property.photos', 'property.owner'])
+            ->with(['property.photos', 'property.owner', 'order'])
             ->latest()
             ->paginate(10);
 
@@ -84,7 +87,7 @@ class BookingController extends Controller
                 ->withInput();
         }
 
-        // Check for date conflicts
+        // Check for date conflicts with existing bookings
         $hasConflict = Booking::hasOverlappingBooking(
             $validated['property_id'],
             $validated['check_in_date'],
@@ -93,11 +96,11 @@ class BookingController extends Controller
 
         if ($hasConflict) {
             return redirect()->back()
-                ->withErrors(['dates' => 'Selected dates are not available.'])
+                ->withErrors(['dates' => 'Selected dates are not available. Please choose different dates.'])
                 ->withInput();
         }
 
-        // Check availability calendar
+        // Check availability calendar for blocked dates
         if (!$property->isAvailableForDates($validated['check_in_date'], $validated['check_out_date'])) {
             return redirect()->back()
                 ->withErrors(['dates' => 'Selected dates are blocked or unavailable.'])
@@ -141,10 +144,12 @@ class BookingController extends Controller
 
             DB::commit();
 
+            $booking->user->notify(new BookingCreatedNotification($booking));
+            $booking->property->owner->notify(new LandlordNewBookingNotification($booking));
+
             // Redirect to payment confirmation page
             return redirect()->route('orders.confirm', $booking)
                 ->with('success', 'Booking created! Please proceed with payment.');
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -194,10 +199,22 @@ class BookingController extends Controller
                 ->withErrors(['booking' => 'Booking can only be confirmed after payment is completed.']);
         }
 
-        $booking->update(['booking_status' => 'confirmed']);
+        DB::beginTransaction();
+        try {
+            $booking->update(['booking_status' => 'confirmed']);
 
-        return redirect()->back()
-            ->with('success', 'Booking confirmed successfully!');
+            $booking->property->update(['status' => 'rented']);
+
+            DB::commit();
+
+            $booking->user->notify(new BookingConfirmedNotification($booking));
+
+            return redirect()->back()->with('success', 'Booking confirmed successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Failed to confirm booking: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Failed to confirm booking.']);
+        }
     }
 
     /**
@@ -205,6 +222,28 @@ class BookingController extends Controller
      */
     public function cancel(Request $request, Booking $booking)
     {
+        $user = Auth::user();
+
+        $isTenant = $booking->user_id === $user->id;
+        $isLandlord = $booking->property->user_id === $user->id;
+        $isAdmin = $user->isAdmin();
+
+        if ($isAdmin) {
+            if (!in_array($booking->booking_status, ['pending', 'confirmed'])) {
+                return redirect()->back()->withErrors(['booking' => 'This booking cannot be cancelled.']);
+            }
+        } elseif ($isTenant) {
+            if (!($booking->booking_status === 'pending' && !$booking->isPaid())) {
+                abort(403, 'You can only cancel unpaid pending bookings.');
+            }
+        } elseif ($isLandlord) {
+            if ($booking->booking_status !== 'pending') {
+                abort(403, 'You cannot cancel a confirmed booking.');
+            }
+        } else {
+            abort(403, 'Unauthorized to cancel this booking');
+        }
+
         // Check if user can cancel this booking
         $canCancel = $booking->user_id === Auth::id() ||
             $booking->property->user_id === Auth::id() ||
@@ -234,11 +273,19 @@ class BookingController extends Controller
                 ->where('status', 'booked')
                 ->update(['status' => 'available']);
 
+            $hasOtherActiveBookings = Booking::where('property_id', $booking->property_id)
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->where('id', '!=', $booking->id)
+                ->exists();
+
+            if (!$hasOtherActiveBookings) {
+                $booking->property->update(['status' => 'available']);
+            }
+
             DB::commit();
 
             return redirect()->back()
                 ->with('success', 'Booking cancelled successfully!');
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -262,10 +309,25 @@ class BookingController extends Controller
                 ->withErrors(['booking' => 'Only confirmed bookings can be completed.']);
         }
 
-        $booking->update(['booking_status' => 'completed']);
+        DB::beginTransaction();
+        try {
+            $booking->update(['booking_status' => 'completed']);
 
-        return redirect()->back()
-            ->with('success', 'Booking marked as completed!');
+            $hasFutureBookings = Booking::where('property_id', $booking->property_id)
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->where('check_in_date', '>', $booking->check_out_date)
+                ->exists();
+
+            if (!$hasFutureBookings) {
+                $booking->property->update(['status' => 'available']);
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Booking marked as completed!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to complete booking.']);
+        }
     }
 
     /**

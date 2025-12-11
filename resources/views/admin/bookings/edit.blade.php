@@ -10,7 +10,7 @@
             <div class="mb-6">
                 <a href="{{ route('admin.bookings.index') }}"
                     class="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-200 transition duration-150 ease-in-out">
-                    ← Kembali ke Daftar Booking
+                    ← Back to Booking List
                 </a>
             </div>
 
@@ -43,7 +43,7 @@
                                 </span>
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Jumlah ini akan dihitung ulang otomatis jika tanggal atau properti diubah.
+                                This amount will be automatically recalculated if dates or property are changed.
                             </p>
                             <input type="hidden" name="total_amount"
                                 value="{{ old('total_amount', $booking->total_amount) }}">
@@ -53,11 +53,11 @@
 
                             <div class="col-span-1">
                                 <label for="property_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Properti</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Property</label>
                                 <select name="property_id" id="property_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="" disabled>Pilih Properti</option>
+                                    <option value="" disabled>Select Property</option>
                                     @foreach ($properties as $property)
                                         <option value="{{ $property->id }}"
                                             {{ old('property_id', $booking->property_id) == $property->id ? 'selected' : '' }}>
@@ -72,12 +72,12 @@
 
                             <div class="col-span-1">
                                 <label for="user_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Penyewa
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant
                                     (User)</label>
                                 <select name="user_id" id="user_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="" disabled>Pilih Penyewa</option>
+                                    <option value="" disabled>Select Tenant</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
                                             {{ old('user_id', $booking->user_id) == $user->id ? 'selected' : '' }}>
@@ -95,9 +95,9 @@
 
                             <div class="col-span-1">
                                 <label for="check_in_date"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal
-                                    Check-in</label>
-                                <input type="date" name="check_in_date" id="check_in_date" {{-- IMPLEMENTASI BERSIH: Akses properti dan gunakan format() Carbon --}}
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Check-in
+                                    Date</label>
+                                <input type="date" name="check_in_date" id="check_in_date"
                                     value="{{ old('check_in_date', $booking->check_in_date?->format('Y-m-d')) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -111,9 +111,9 @@
 
                             <div class="col-span-1">
                                 <label for="check_out_date"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal
-                                    Check-out</label>
-                                <input type="date" name="check_out_date" id="check_out_date" {{-- IMPLEMENTASI BERSIH: Akses properti dan gunakan format() Carbon --}}
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Check-out
+                                    Date</label>
+                                <input type="date" name="check_out_date" id="check_out_date"
                                     value="{{ old('check_out_date', $booking->check_out_date?->format('Y-m-d')) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -127,8 +127,8 @@
 
                             <div class="col-span-1">
                                 <label for="payment_status"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status
-                                    Pembayaran</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment
+                                    Status</label>
                                 <select name="payment_status" id="payment_status"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -150,8 +150,8 @@
 
                             <div class="col-span-1">
                                 <label for="booking_status"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status
-                                    Booking</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Booking
+                                    Status</label>
                                 <select name="booking_status" id="booking_status"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
@@ -174,8 +174,7 @@
 
                         <div class="mb-8">
                             <label for="notes"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Catatan
-                                (Notes)</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
                             <textarea name="notes" id="notes" rows="3"
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('notes', $booking->notes) }}</textarea>
                             @error('notes')
@@ -186,11 +185,11 @@
                         <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 pt-6">
                             <a href="{{ route('admin.bookings.index') }}"
                                 class="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out mr-3">
-                                Batal
+                                Cancel
                             </a>
                             <button type="submit"
                                 class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out">
-                                Simpan Perubahan
+                                Save Changes
                             </button>
                         </div>
                     </form>

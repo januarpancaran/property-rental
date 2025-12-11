@@ -1,14 +1,18 @@
 <?php
 
 use App\Http\Controllers\AdminBookingController;
+use App\Http\Controllers\AdminPropertyController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,11 +21,14 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', fn () => view('welcome'));
+// Route::get('/', fn() => view('welcome'));
+Route::get('/', [WelcomeController::class, '__invoke']);
 
-Route::get('/dashboard', fn () => view('dashboard'))
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Route::get('/dashboard', fn() => view('dashboard'))
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
+//
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +39,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Routes (for AJAX calls)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('api')->name('api.')->group(function () {
+    // Get blocked dates for a property (used by booking calendar)
+    Route::get('/properties/{id}/blocked-dates', [PropertyController::class, 'getBlockedDates'])
+        ->name('properties.blocked-dates');
 });
 
 /*
@@ -49,8 +67,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
     // Property Management
     Route::middleware('permission:manage_properties')->group(function () {
-        Route::get('properties', [PropertyController::class, 'adminIndex'])->name('properties.index');
-        Route::delete('properties/{property}', [PropertyController::class, 'destroy'])->name('properties.destroy');
+        Route::resource('properties', AdminPropertyController::class);
+        Route::delete('properties/{photo}/photo', [AdminPropertyController::class, 'deletePhoto'])->name('properties.photo.destroy');
+        Route::get('properties/{property}/availability', [AdminPropertyController::class, 'availability'])->name('properties.availability');
+        Route::post('properties/{property}/block-dates', [AdminPropertyController::class, 'blockDates'])->name('properties.block-dates');
+        Route::post('properties/{property}/set-pricing', [AdminPropertyController::class, 'setPricing'])->name('properties.set-pricing');
     });
 
     // Booking Management
@@ -68,7 +89,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 |--------------------------------------------------------------------------
 */
 Route::prefix('properties')->name('properties.')->middleware('auth')->group(function () {
-
     // Public - Browse all properties
     Route::get('/', [PropertyController::class, 'index'])->name('index');
 
@@ -143,7 +163,7 @@ Route::prefix('bookings')->name('bookings.')->middleware('auth')->group(function
         ->middleware('permission:complete_booking')
         ->name('complete');
 
-    // AJAX: Check availability
+    // AJAX: Check availability (deprecated but kept for backward compatibility)
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check-availability');
 });
 
@@ -230,5 +250,8 @@ Route::prefix('orders')->name('orders.')->middleware('auth')->group(function () 
 
 // Webhook Route (no auth middleware)
 Route::post('/webhook/payment', [WebhookController::class, 'handlePayment'])->name('webhook.payment');
+
+// Notifications Route
+Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
 
 require __DIR__ . '/auth.php';

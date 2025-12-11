@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\AvailabilityCalendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminBookingController extends Controller
 {
@@ -44,52 +45,68 @@ class AdminBookingController extends Controller
             'user_id' => 'required|exists:users,id',
             'check_in_date' => 'required|date|after_or_equal:today',
             'check_out_date' => 'required|date|after:check_in_date',
-            'payment_status' => 'required|string',
+            'payment_status' => 'required|in:unpaid,paid,failed',
+            'booking_status' => 'required|in:pending,confirmed,cancelled,completed',
             'notes' => 'nullable|string',
         ]);
 
-        $isAvailable = $this->checkAvailability(
-            $validatedData['property_id'],
-            $validatedData['check_in_date'],
-            $validatedData['check_out_date']
-        );
+        $property = Property::findOrFail($validatedData['property_id']);
 
-        if (!$isAvailable) {
-            return back()->withErrors(['dates' => 'Properti tidak tersedia untuk tanggal yang dipilih.'])
-                ->withInput();
+        // Check for overlapping bookings
+        $hasOverlap = Booking::where('property_id', $validatedData['property_id'])
+            ->where('booking_status', '!=', 'cancelled')
+            ->where(function ($q) use ($validatedData) {
+                $q->whereBetween('check_in_date', [$validatedData['check_in_date'], $validatedData['check_out_date']])
+                    ->orWhereBetween('check_out_date', [$validatedData['check_in_date'], $validatedData['check_out_date']])
+                    ->orWhere(function ($sub) use ($validatedData) {
+                        $sub->where('check_in_date', '<=', $validatedData['check_in_date'])
+                            ->where('check_out_date', '>=', $validatedData['check_out_date']);
+                    });
+            })
+            ->exists();
+
+        if ($hasOverlap) {
+            return back()->withErrors(['dates' => 'These dates overlap with an existing booking.']);
         }
 
-        $calculatedAmount = $this->calculateTotalAmount(
-            $validatedData['property_id'],
-            $validatedData['check_in_date'],
-            $validatedData['check_out_date']
-        );
-
-        if ($calculatedAmount <= 0) {
-            return back()->withErrors(['amount' => 'Gagal menghitung jumlah booking. Pastikan harga ditetapkan di Kalender Ketersediaan untuk tanggal tersebut.'])
-                ->withInput();
+        // Check availability calendar
+        if (!$property->isAvailableForDates($validatedData['check_in_date'], $validatedData['check_out_date'])) {
+            return back()->withErrors(['dates' => 'The property is not available for the selected dates.']);
         }
 
-        $validatedData['total_amount'] = $calculatedAmount;
+        // Calculate total amount (match user flow: daily rate from monthly rent)
+        $checkIn = Carbon::parse($validatedData['check_in_date']);
+        $checkOut = Carbon::parse($validatedData['check_out_date']);
+        $nights = $checkIn->diffInDays($checkOut);
+        $dailyRate = $property->rent_amount / 30;
+        $totalAmount = $nights * $dailyRate;
+        $validatedData['total_amount'] = $totalAmount;
 
         try {
             DB::beginTransaction();
 
             $booking = Booking::create($validatedData);
 
-            $endDateForUpdate = date('Y-m-d', strtotime('-1 day', strtotime($validatedData['check_out_date'])));
-            AvailabilityCalendar::where('property_id', $validatedData['property_id'])
-                ->whereBetween('date', [$validatedData['check_in_date'], $endDateForUpdate])
-                ->update(['status' => 'booked']);
+            // Block each date in availability calendar (check_out is exclusive)
+            $currentDate = $validatedData['check_in_date'];
+            while ($currentDate < $validatedData['check_out_date']) {
+                AvailabilityCalendar::updateOrCreate(
+                    [
+                        'property_id' => $validatedData['property_id'],
+                        'date' => $currentDate,
+                    ],
+                    ['status' => 'booked']
+                );
+                $currentDate = Carbon::parse($currentDate)->addDay()->toDateString();
+            }
 
             DB::commit();
-            return redirect()->route('admin.bookings.index')->with('success', 'Booking berhasil dibuat!');
+            return redirect()->route('admin.bookings.index')->with('success', 'Booking created successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal membuat booking: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Failed to create booking: ' . $e->getMessage())->withInput();
         }
-
     }
 
     /**
@@ -98,7 +115,6 @@ class AdminBookingController extends Controller
     public function show(Booking $booking)
     {
         $booking->load(['property', 'user']);
-
         return view('admin.bookings.show', compact('booking'));
     }
 
@@ -109,7 +125,6 @@ class AdminBookingController extends Controller
     {
         $properties = Property::all(['id', 'title']);
         $users = User::all(['id', 'first_name', 'last_name']);
-
         return view('admin.bookings.edit', compact('booking', 'properties', 'users'));
     }
 
@@ -123,58 +138,108 @@ class AdminBookingController extends Controller
             'user_id' => 'required|exists:users,id',
             'check_in_date' => 'required|date|after_or_equal:today',
             'check_out_date' => 'required|date|after:check_in_date',
-            'payment_status' => 'required|string',
+            'payment_status' => 'required|in:unpaid,paid,failed',
+            'booking_status' => 'required|in:pending,confirmed,cancelled,completed',
             'notes' => 'nullable|string',
         ]);
+
+        $property = Property::findOrFail($validatedData['property_id']);
+
+        // Free old dates
+        $oldCurrent = $booking->check_in_date;
+        while ($oldCurrent < $booking->check_out_date) {
+            AvailabilityCalendar::updateOrCreate(
+                [
+                    'property_id' => $booking->property_id,
+                    'date' => $oldCurrent,
+                ],
+                ['status' => 'available']
+            );
+            $oldCurrent = Carbon::parse($oldCurrent)->addDay()->toDateString();
+        }
+
+        // Check overlap (excluding self)
+        $hasOverlap = Booking::where('property_id', $validatedData['property_id'])
+            ->where('id', '!=', $booking->id)
+            ->where('booking_status', '!=', 'cancelled')
+            ->where(function ($q) use ($validatedData) {
+                $q->whereBetween('check_in_date', [$validatedData['check_in_date'], $validatedData['check_out_date']])
+                    ->orWhereBetween('check_out_date', [$validatedData['check_in_date'], $validatedData['check_out_date']])
+                    ->orWhere(function ($sub) use ($validatedData) {
+                        $sub->where('check_in_date', '<=', $validatedData['check_in_date'])
+                            ->where('check_out_date', '>=', $validatedData['check_out_date']);
+                    });
+            })
+            ->exists();
+
+        if ($hasOverlap) {
+            // Re-block old dates on failure
+            $tempDate = $booking->check_in_date;
+            while ($tempDate < $booking->check_out_date) {
+                AvailabilityCalendar::updateOrCreate(
+                    ['property_id' => $booking->property_id, 'date' => $tempDate],
+                    ['status' => 'booked']
+                );
+                $tempDate = Carbon::parse($tempDate)->addDay()->toDateString();
+            }
+            return back()->withErrors(['dates' => 'These dates overlap with an existing booking.']);
+        }
+
+        if (!$property->isAvailableForDates($validatedData['check_in_date'], $validatedData['check_out_date'])) {
+            // Re-block old dates
+            $tempDate = $booking->check_in_date;
+            while ($tempDate < $booking->check_out_date) {
+                AvailabilityCalendar::updateOrCreate(
+                    ['property_id' => $booking->property_id, 'date' => $tempDate],
+                    ['status' => 'booked']
+                );
+                $tempDate = Carbon::parse($tempDate)->addDay()->toDateString();
+            }
+            return back()->withErrors(['dates' => 'The property is not available for the new selected dates.']);
+        }
+
+        // Recalculate amount
+        $checkIn = Carbon::parse($validatedData['check_in_date']);
+        $checkOut = Carbon::parse($validatedData['check_out_date']);
+        $nights = $checkIn->diffInDays($checkOut);
+        $dailyRate = $property->rent_amount / 30;
+        $validatedData['total_amount'] = $nights * $dailyRate;
 
         try {
             DB::beginTransaction();
 
-            $oldEndDate = date('Y-m-d', strtotime('-1 day', strtotime($booking->check_out_date)));
-            AvailabilityCalendar::where('property_id', $booking->property_id)
-                ->whereBetween('date', [$booking->check_in_date, $oldEndDate])
-                ->update(['status' => 'available']);
-
-            $isAvailable = $this->checkAvailability(
-                $validatedData['property_id'],
-                $validatedData['check_in_date'],
-                $validatedData['check_out_date']
-            );
-
-            if (!$isAvailable) {
-                DB::rollBack();
-                // Rollback status ke 'available' karena gagal
-                return back()->withErrors(['dates' => 'Properti tidak tersedia untuk tanggal baru yang dipilih.'])
-                    ->withInput();
-            }
-
-            $calculatedAmount = $this->calculateTotalAmount(
-                $validatedData['property_id'],
-                $validatedData['check_in_date'],
-                $validatedData['check_out_date']
-            );
-
-            if ($calculatedAmount <= 0) {
-                DB::rollBack();
-                return back()->withErrors(['amount' => 'Gagal menghitung jumlah booking baru.'])
-                    ->withInput();
-            }
-
-            $validatedData['total_amount'] = $calculatedAmount;
-
             $booking->update($validatedData);
 
-            $newEndDate = date('Y-m-d', strtotime('-1 day', strtotime($validatedData['check_out_date'])));
-            AvailabilityCalendar::where('property_id', $validatedData['property_id'])
-                ->whereBetween('date', [$validatedData['check_in_date'], $newEndDate])
-                ->update(['status' => 'booked']);
+            // Block new dates
+            $currentDate = $validatedData['check_in_date'];
+            while ($currentDate < $validatedData['check_out_date']) {
+                AvailabilityCalendar::updateOrCreate(
+                    [
+                        'property_id' => $validatedData['property_id'],
+                        'date' => $currentDate,
+                    ],
+                    ['status' => 'booked']
+                );
+                $currentDate = Carbon::parse($currentDate)->addDay()->toDateString();
+            }
 
             DB::commit();
-            return redirect()->route('admin.bookings.index')->with('success', 'Booking berhasil diperbarui!');
+            return redirect()->route('admin.bookings.index')->with('success', 'Booking updated successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal memperbarui booking: ' . $e->getMessage())->withInput();
+
+            // Best-effort: try to restore old dates
+            $tempDate = $booking->check_in_date;
+            while ($tempDate < $booking->check_out_date) {
+                AvailabilityCalendar::updateOrCreate(
+                    ['property_id' => $booking->property_id, 'date' => $tempDate],
+                    ['status' => 'booked']
+                );
+                $tempDate = Carbon::parse($tempDate)->addDay()->toDateString();
+            }
+
+            return back()->with('error', 'Failed to update booking: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -186,48 +251,26 @@ class AdminBookingController extends Controller
         try {
             DB::beginTransaction();
 
-            AvailabilityCalendar::where('property_id', $booking->property_id)
-                ->whereBetween('date', [$booking->check_in_date, date('Y-m-d', strtotime('-1 day', strtotime($booking->check_out_date)))])
-                ->update(['status' => 'available']);
+            // Free all booked dates
+            $currentDate = $booking->check_in_date;
+            while ($currentDate < $booking->check_out_date) {
+                AvailabilityCalendar::updateOrCreate(
+                    [
+                        'property_id' => $booking->property_id,
+                        'date' => $currentDate,
+                    ],
+                    ['status' => 'available']
+                );
+                $currentDate = Carbon::parse($currentDate)->addDay()->toDateString();
+            }
 
             $booking->delete();
-
             DB::commit();
-            return redirect()->route('admin.bookings.index')->with('success', 'Booking berhasil dihapus dan tanggal dikosongkan!');
+            return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted and dates freed!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal menghapus booking: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete booking: ' . $e->getMessage());
         }
-    }
-
-    protected function checkAvailability($propertyId, $checkIn, $checkOut)
-    {
-        $checkIn = date('Y-m-d', strtotime($checkIn));
-        $checkOut = date('Y-m-d', strtotime($checkOut));
-
-        $endDate = date('Y-m-d', strtotime('-1 day', strtotime($checkOut)));
-        $calendarEntryCount = AvailabilityCalendar::where('property_id', $propertyId)
-            ->whereBetween('date', [$checkIn, $endDate])
-            ->count();
-
-        $dateDiff = strtotime($endDate) - strtotime($checkIn);
-        $totalDays = floor($dateDiff / (60 * 60 * 24)) + 1;
-
-        $requiredDays = (int) $totalDays;
-        return $calendarEntryCount === $requiredDays;
-    }
-
-    protected function calculateTotalAmount($propertyId, $checkIn, $checkOut)
-    {
-        $checkIn = date('Y-m-d', strtotime($checkIn));
-        $checkOut = date('Y-m-d', strtotime($checkOut));
-        $endDate = date('Y-m-d', strtotime('-1 day', strtotime($checkOut)));
-
-        $totalAmount = AvailabilityCalendar::where('property_id', $propertyId)
-            ->whereBetween('date', [$checkIn, $endDate])
-            ->sum('price_override');
-
-        return $totalAmount ?? 0;
     }
 }
