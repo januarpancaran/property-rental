@@ -99,7 +99,8 @@
                     @if ($bookings->count() > 0)
                         <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gradient-to-r from-indigo-50 to-white dark:from-gray-700 dark:to-gray-700">
+                                <thead
+                                    class="bg-gradient-to-r from-indigo-50 to-white dark:from-gray-700 dark:to-gray-700">
                                     <tr>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -150,27 +151,32 @@
                                                     {{ $booking->user->email }}
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 <div class="flex items-center gap-1">
-                                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
                                                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                     </svg>
                                                     {{ $booking->check_in_date->format('d M Y') }}
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 <div class="flex items-center gap-1">
-                                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
                                                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                     </svg>
                                                     {{ $booking->check_out_date->format('d M Y') }}
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $booking->nights }}
                                             </td>
                                             <td
@@ -195,8 +201,8 @@
                                                     </a>
 
                                                     @if ($booking->booking_status === 'pending')
-                                                        <form action="{{ route('bookings.confirm', $booking) }}" method="POST"
-                                                            class="inline">
+                                                        <form action="{{ route('bookings.confirm', $booking) }}"
+                                                            method="POST" class="inline">
                                                             @csrf
                                                             <button type="submit"
                                                                 class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 font-medium transition">
@@ -206,8 +212,9 @@
                                                     @endif
 
                                                     @if ($booking->booking_status === 'pending')
-                                                        <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
-                                                            class="inline" onsubmit="return confirm('Cancel this booking?');">
+                                                        <form action="{{ route('bookings.cancel', $booking) }}"
+                                                            method="POST" class="inline"
+                                                            onsubmit="return confirm('Cancel this booking?');">
                                                             @csrf
                                                             <button type="submit"
                                                                 class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition">
@@ -232,8 +239,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <p class="text-gray-500 dark:text-gray-400 mt-4 text-lg">No bookings yet for this property.</p>
-                            <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Bookings will appear here once tenants
+                            <p class="text-gray-500 dark:text-gray-400 mt-4 text-lg">No bookings yet for this property.
+                            </p>
+                            <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Bookings will appear here once
+                                tenants
                                 make reservations.</p>
                         </div>
                     @endif

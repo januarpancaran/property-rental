@@ -102,7 +102,8 @@
                                         <p>Daily Rate: <span id="dailyRate" class="font-semibold">Rp
                                                 {{ number_format($property->rent_amount / 30, 0, ',', '.') }}</span>
                                         </p>
-                                        <p class="text-lg font-bold pt-2 border-t border-indigo-200 dark:border-indigo-700">
+                                        <p
+                                            class="text-lg font-bold pt-2 border-t border-indigo-200 dark:border-indigo-700">
                                             Total Amount: <span id="totalAmount"></span>
                                         </p>
                                     </div>
@@ -110,7 +111,8 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="notes"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Additional Notes (Optional)
                                 </label>
                                 <textarea name="notes" id="notes" rows="3"
@@ -258,7 +260,7 @@
             }
 
             // Update min date for check-out when check-in changes
-            checkInInput.addEventListener('change', function () {
+            checkInInput.addEventListener('change', function() {
                 const checkInDate = new Date(this.value);
                 checkInDate.setDate(checkInDate.getDate() + 1);
                 checkOutInput.min = checkInDate.toISOString().split('T')[0];
@@ -270,14 +272,14 @@
                 validateDates();
             });
 
-            checkOutInput.addEventListener('change', function () {
+            checkOutInput.addEventListener('change', function() {
                 validateDates();
             });
 
             // Add custom validation for date picker (disable blocked dates)
             function addDateValidation() {
                 [checkInInput, checkOutInput].forEach(input => {
-                    input.addEventListener('input', function (e) {
+                    input.addEventListener('input', function(e) {
                         const selectedDate = e.target.value;
                         if (selectedDate && isDateBlocked(selectedDate)) {
                             e.target.value = '';

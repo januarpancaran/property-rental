@@ -44,13 +44,15 @@
                             <select name="property_type"
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                                 <option value="">All Types</option>
-                                <option value="apartment" {{ request('property_type') == 'apartment' ? 'selected' : '' }}>
+                                <option value="apartment"
+                                    {{ request('property_type') == 'apartment' ? 'selected' : '' }}>
                                     Apartment</option>
                                 <option value="house" {{ request('property_type') == 'house' ? 'selected' : '' }}>House
                                 </option>
                                 <option value="condo" {{ request('property_type') == 'condo' ? 'selected' : '' }}>Condo
                                 </option>
-                                <option value="townhouse" {{ request('property_type') == 'townhouse' ? 'selected' : '' }}>
+                                <option value="townhouse"
+                                    {{ request('property_type') == 'townhouse' ? 'selected' : '' }}>
                                     Townhouse</option>
                                 <option value="studio" {{ request('property_type') == 'studio' ? 'selected' : '' }}>
                                     Studio</option>
@@ -127,7 +129,8 @@
                                                         @endif
                                                     </div>
                                                     <div class="ml-4">
-                                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                        <div
+                                                            class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                             {{ $property->title }}
                                                         </div>
                                                         <div class="text-sm text-gray-500 dark:text-gray-400">
@@ -136,17 +139,20 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $property->owner->full_name }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $property->city }}, {{ $property->state }}
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
                                                 {{ $property->property_type }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                                 Rp {{ number_format($property->rent_amount, 0, ',', '.') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -163,8 +169,8 @@
                                                     class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 mr-3">View</a>
                                                 <a href="{{ route('admin.properties.edit', $property) }}"
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3">Edit</a>
-                                                <form action="{{ route('admin.properties.destroy', $property) }}" method="POST"
-                                                    class="inline"
+                                                <form action="{{ route('admin.properties.destroy', $property) }}"
+                                                    method="POST" class="inline"
                                                     onsubmit="return confirm('Are you sure you want to delete this property?');">
                                                     @csrf
                                                     @method('DELETE')

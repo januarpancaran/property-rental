@@ -32,7 +32,8 @@
                                     <img src="{{ $photo->url }}" alt="{{ $photo->alt_text }}"
                                         class="w-full h-48 object-cover rounded-lg">
                                     @if ($photo->is_featured)
-                                        <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                                        <span
+                                            class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
                                             Featured
                                         </span>
                                     @endif
@@ -66,7 +67,8 @@
                                 <div>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Status:</span>
                                     <p class="font-medium dark:text-gray-100">
-                                        <span class="px-2 py-1 text-xs rounded
+                                        <span
+                                            class="px-2 py-1 text-xs rounded
                                             @if ($property->status === 'available') bg-green-500 text-white
                                             @elseif($property->status === 'rented') bg-red-500 text-white
                                             @else bg-yellow-500 text-white @endif">
@@ -187,14 +189,18 @@
                                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {{ $booking->user->full_name }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $booking->check_in_date->format('d M Y') }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $booking->check_out_date->format('d M Y') }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                <span class="px-2 py-1 text-xs rounded capitalize
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded capitalize
                                                                             @if ($booking->booking_status === 'confirmed') bg-green-500 text-white
                                                                             @elseif($booking->booking_status === 'pending') bg-yellow-500 text-white
                                                                             @elseif($booking->booking_status === 'cancelled') bg-red-500 text-white
@@ -202,7 +208,8 @@
                                                     {{ $booking->booking_status }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $booking->formatted_total_amount }}
                                             </td>
                                         </tr>

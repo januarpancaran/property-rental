@@ -13,11 +13,14 @@ class DashboardController extends Controller
             return redirect()->route("login");
         }
 
-        if ($user->isAdmin())
+        if ($user->isAdmin()) {
             return redirect()->route("admin.users.index");
-        if ($user->isLandlord())
+        }
+        if ($user->isLandlord()) {
             return redirect()->route("properties.my.index");
-        if ($user->isTenant())
+        }
+        if ($user->isTenant()) {
             return redirect()->route("properties.index");
+        }
     }
 }

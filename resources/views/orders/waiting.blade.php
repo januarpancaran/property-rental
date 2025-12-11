@@ -2,8 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -87,7 +86,8 @@
                                             alt="{{ $order->booking->property->title }}"
                                             class="h-20 w-20 rounded-lg object-cover shadow-sm">
                                     @else
-                                        <div class="h-20 w-20 rounded-lg bg-gray-100 shadow-inner dark:bg-gray-800"></div>
+                                        <div class="h-20 w-20 rounded-lg bg-gray-100 shadow-inner dark:bg-gray-800">
+                                        </div>
                                     @endif
                                     <div class="flex-1 space-y-1">
                                         <div class="flex items-start justify-between gap-3">
@@ -164,13 +164,15 @@
                                 <div class="flex items-start gap-3">
                                     <span
                                         class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-300 to-orange-300 text-amber-900 shadow-sm dark:from-amber-700 dark:to-orange-700 dark:text-amber-100">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 16h-1v-4h-1m1-4h.01M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </span>
                                     <div>
-                                        <p class="text-sm font-bold text-amber-900 dark:text-amber-100">Payment Deadline
+                                        <p class="text-sm font-bold text-amber-900 dark:text-amber-100">Payment
+                                            Deadline
                                         </p>
                                         <p
                                             class="mt-1 font-mono text-sm font-semibold text-amber-800 dark:text-amber-200">
@@ -265,8 +267,10 @@
 
             function showToast() {
                 const toast = document.createElement('div');
-                toast.className = 'fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg';
-                toast.innerHTML = '<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span>VA number copied</span>';
+                toast.className =
+                    'fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg';
+                toast.innerHTML =
+                    '<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span>VA number copied</span>';
                 document.body.appendChild(toast);
                 setTimeout(() => toast.remove(), 2800);
             }
@@ -294,7 +298,8 @@
         function showSuccessAnimation() {
             const overlay = document.createElement('div');
             overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm';
-            overlay.innerHTML = '<div class="rounded-2xl bg-white px-8 py-6 shadow-2xl dark:bg-gray-900 animate-in zoom-in-50 duration-300"><div class="flex items-center gap-3"><div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/40"><svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div><div><p class="text-lg font-bold text-gray-900 dark:text-gray-100">Payment received!</p><p class="text-sm text-gray-600 dark:text-gray-400">Redirecting...</p></div></div></div>';
+            overlay.innerHTML =
+                '<div class="rounded-2xl bg-white px-8 py-6 shadow-2xl dark:bg-gray-900 animate-in zoom-in-50 duration-300"><div class="flex items-center gap-3"><div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/40"><svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div><div><p class="text-lg font-bold text-gray-900 dark:text-gray-100">Payment received!</p><p class="text-sm text-gray-600 dark:text-gray-400">Redirecting...</p></div></div></div>';
             document.body.appendChild(overlay);
         }
     </script>

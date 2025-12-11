@@ -128,12 +128,13 @@
                 </a>
             </div>
 
-            @if($properties->count() > 0)
+            @if ($properties->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                    @foreach($properties as $property)
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    @foreach ($properties as $property)
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
                             <div class="h-40 bg-gray-200 dark:bg-gray-700 relative">
-                                @if($property->featuredPhoto)
+                                @if ($property->featuredPhoto)
                                     <img src="{{ $property->featuredPhoto->url }}" alt="{{ $property->title }}"
                                         class="w-full h-full object-cover">
                                 @else

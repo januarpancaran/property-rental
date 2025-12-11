@@ -25,7 +25,8 @@
                             </h3>
 
                             <div class="mb-4">
-                                <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="title"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Property Title
                                 </label>
                                 <input type="text" name="title" id="title" value="{{ old('title') }}"
@@ -59,13 +60,18 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         required>
                                         <option value="">Select Type</option>
-                                        <option value="apartment" {{ old('property_type') == 'apartment' ? 'selected' : '' }}>Apartment</option>
+                                        <option value="apartment"
+                                            {{ old('property_type') == 'apartment' ? 'selected' : '' }}>Apartment
+                                        </option>
                                         <option value="house" {{ old('property_type') == 'house' ? 'selected' : '' }}>
                                             House</option>
                                         <option value="condo" {{ old('property_type') == 'condo' ? 'selected' : '' }}>
                                             Condo</option>
-                                        <option value="townhouse" {{ old('property_type') == 'townhouse' ? 'selected' : '' }}>Townhouse</option>
-                                        <option value="studio" {{ old('property_type') == 'studio' ? 'selected' : '' }}>
+                                        <option value="townhouse"
+                                            {{ old('property_type') == 'townhouse' ? 'selected' : '' }}>Townhouse
+                                        </option>
+                                        <option value="studio"
+                                            {{ old('property_type') == 'studio' ? 'selected' : '' }}>
                                             Studio</option>
                                     </select>
                                     @error('property_type')
@@ -94,7 +100,8 @@
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Owner Assignment
                             </h3>
                             <div class="mb-4">
-                                <label for="user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="user_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Owner (User)
                                 </label>
                                 <select name="user_id" id="user_id"
@@ -102,7 +109,8 @@
                                     required>
                                     <option value="">Select Owner</option>
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                        <option value="{{ $user->id }}"
+                                            {{ old('user_id') == $user->id ? 'selected' : '' }}>
                                             {{ $user->full_name }} ({{ $user->email }})
                                         </option>
                                     @endforeach
@@ -113,13 +121,16 @@
                             </div>
 
                             <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="status"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Initial Status
                                 </label>
                                 <select name="status" id="status"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="available" {{ old('status', 'available') == 'available' ? 'selected' : '' }}>Available</option>
+                                    <option value="available"
+                                        {{ old('status', 'available') == 'available' ? 'selected' : '' }}>Available
+                                    </option>
                                     <option value="rented" {{ old('status') == 'rented' ? 'selected' : '' }}>Rented
                                     </option>
                                     <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>
@@ -136,7 +147,8 @@
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Location</h3>
 
                             <div class="mb-4">
-                                <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="address"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Street Address
                                 </label>
                                 <input type="text" name="address" id="address" value="{{ old('address') }}"
@@ -200,7 +212,8 @@
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Bedrooms
                                     </label>
-                                    <input type="number" name="bedrooms" id="bedrooms" value="{{ old('bedrooms', 0) }}"
+                                    <input type="number" name="bedrooms" id="bedrooms"
+                                        value="{{ old('bedrooms', 0) }}"
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         min="0" required>
                                     @error('bedrooms')
@@ -227,7 +240,8 @@
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Area (m²)
                                     </label>
-                                    <input type="number" name="area_sqm" id="area_sqm" value="{{ old('area_sqm') }}"
+                                    <input type="number" name="area_sqm" id="area_sqm"
+                                        value="{{ old('area_sqm') }}"
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         min="0" step="0.01" placeholder="75.5" required>
                                     @error('area_sqm')
@@ -239,14 +253,17 @@
 
                         <!-- Photos Upload -->
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Property Photos</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Property Photos
+                            </h3>
 
                             <div class="mb-4">
-                                <label for="photos" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="photos"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Upload Photos (Max 10, JPEG/PNG only)
                                 </label>
                                 <input type="file" name="photos[]" id="photos" multiple
-                                    accept="image/jpeg,image/png,image/jpg" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
+                                    accept="image/jpeg,image/png,image/jpg"
+                                    class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
                 file:mr-4 file:py-2 file:px-4
                 file:rounded file:border-0
                 file:text-sm file:font-semibold

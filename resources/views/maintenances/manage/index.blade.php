@@ -71,7 +71,7 @@
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                             @forelse ($maintenances as $maintenance)
                                 <tr
-                                    class="transition hover:bg-purple-50/30 dark:hover:bg-purple-950/20 @if($maintenance->isOverdue()) bg-red-50 dark:bg-red-950/20 @endif">
+                                    class="transition hover:bg-purple-50/30 dark:hover:bg-purple-950/20 @if ($maintenance->isOverdue()) bg-red-50 dark:bg-red-950/20 @endif">
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                                         #{{ $maintenance->id }}</td>
@@ -90,7 +90,10 @@
                                                 'medium' => ['color' => 'yellow', 'icon' => '🟡'],
                                                 'low' => ['color' => 'green', 'icon' => '🟢'],
                                             ];
-                                            $pConfig = $priorityConfig[$maintenance->priority] ?? ['color' => 'gray', 'icon' => '⚪'];
+                                            $pConfig = $priorityConfig[$maintenance->priority] ?? [
+                                                'color' => 'gray',
+                                                'icon' => '⚪',
+                                            ];
                                         @endphp
                                         <span
                                             class="inline-flex items-center gap-1.5 rounded-full bg-{{ $pConfig['color'] }}-100 px-2.5 py-1 text-xs font-bold text-{{ $pConfig['color'] }}-700 dark:bg-{{ $pConfig['color'] }}-900/40 dark:text-{{ $pConfig['color'] }}-300">
@@ -106,7 +109,10 @@
                                                 'completed' => ['color' => 'green', 'icon' => '✓'],
                                                 'cancelled' => ['color' => 'red', 'icon' => '✕'],
                                             ];
-                                            $sConfig = $statusConfig[$maintenance->status] ?? ['color' => 'gray', 'icon' => '○'];
+                                            $sConfig = $statusConfig[$maintenance->status] ?? [
+                                                'color' => 'gray',
+                                                'icon' => '○',
+                                            ];
                                         @endphp
                                         <div class="flex flex-col gap-1">
                                             <span
@@ -114,7 +120,7 @@
                                                 <span>{{ $sConfig['icon'] }}</span>
                                                 {{ ucfirst(str_replace('_', ' ', $maintenance->status)) }}
                                             </span>
-                                            @if($maintenance->isOverdue())
+                                            @if ($maintenance->isOverdue())
                                                 <span
                                                     class="inline-flex w-fit items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-700 dark:bg-red-900/40 dark:text-red-300">
                                                     ⚠️ Overdue
@@ -128,7 +134,8 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <a href="{{ route('manage.maintenances.show', $maintenance) }}"
                                             class="inline-flex items-center gap-1.5 rounded-lg bg-indigo-100 px-3 py-1.5 text-sm font-semibold text-indigo-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/50">
-                                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
@@ -142,15 +149,18 @@
                                         <div class="flex flex-col items-center justify-center space-y-3">
                                             <span
                                                 class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
                                                         d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                                 </svg>
                                             </span>
                                             <div>
                                                 <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">No
                                                     Maintenance Requests</p>
-                                                <p class="text-xs text-gray-600 dark:text-gray-400">All maintenance requests
+                                                <p class="text-xs text-gray-600 dark:text-gray-400">All maintenance
+                                                    requests
                                                     have been completed or none exist yet.</p>
                                             </div>
                                         </div>
@@ -160,8 +170,9 @@
                         </tbody>
                     </table>
                 </div>
-                @if($maintenances->hasPages())
-                    <div class="border-t border-gray-100 bg-gray-50/30 px-6 py-4 dark:border-gray-700 dark:bg-gray-800/30">
+                @if ($maintenances->hasPages())
+                    <div
+                        class="border-t border-gray-100 bg-gray-50/30 px-6 py-4 dark:border-gray-700 dark:bg-gray-800/30">
                         {{ $maintenances->links() }}
                     </div>
                 @endif

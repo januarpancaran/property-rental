@@ -78,13 +78,21 @@
                                             class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition"
                                             required>
                                             <option value="">Select Type</option>
-                                            <option value="apartment" {{ old('property_type') == 'apartment' ? 'selected' : '' }}>Apartment</option>
-                                            <option value="house" {{ old('property_type') == 'house' ? 'selected' : '' }}>
+                                            <option value="apartment"
+                                                {{ old('property_type') == 'apartment' ? 'selected' : '' }}>Apartment
+                                            </option>
+                                            <option value="house"
+                                                {{ old('property_type') == 'house' ? 'selected' : '' }}>
                                                 House</option>
-                                            <option value="condo" {{ old('property_type') == 'condo' ? 'selected' : '' }}>
+                                            <option value="condo"
+                                                {{ old('property_type') == 'condo' ? 'selected' : '' }}>
                                                 Condo</option>
-                                            <option value="townhouse" {{ old('property_type') == 'townhouse' ? 'selected' : '' }}>Townhouse</option>
-                                            <option value="studio" {{ old('property_type') == 'studio' ? 'selected' : '' }}>Studio</option>
+                                            <option value="townhouse"
+                                                {{ old('property_type') == 'townhouse' ? 'selected' : '' }}>Townhouse
+                                            </option>
+                                            <option value="studio"
+                                                {{ old('property_type') == 'studio' ? 'selected' : '' }}>Studio
+                                            </option>
                                         </select>
                                         @error('property_type')
                                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -155,7 +163,8 @@
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             State/Province
                                         </label>
-                                        <input type="text" name="state" id="state" value="{{ old('state') }}"
+                                        <input type="text" name="state" id="state"
+                                            value="{{ old('state') }}"
                                             class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition"
                                             placeholder="Central Java" required>
                                         @error('state')
@@ -231,7 +240,8 @@
                                                 📐 Area (m²)
                                             </span>
                                         </label>
-                                        <input type="number" name="area_sqm" id="area_sqm" value="{{ old('area_sqm') }}"
+                                        <input type="number" name="area_sqm" id="area_sqm"
+                                            value="{{ old('area_sqm') }}"
                                             class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition"
                                             min="0" step="0.01" placeholder="75.5" required>
                                         @error('area_sqm')
@@ -325,7 +335,7 @@
 
         let allFiles = []; // Keep track of all selected files
 
-        photosInput.addEventListener('change', function (event) {
+        photosInput.addEventListener('change', function(event) {
             const files = event.target.files;
 
             if (files.length > 0) {
@@ -342,7 +352,7 @@
         });
 
         // Add photos button click handler
-        addPhotosBtn.addEventListener('click', function () {
+        addPhotosBtn.addEventListener('click', function() {
             photosInput.click();
         });
 
@@ -352,7 +362,7 @@
             allFiles.forEach((file, index) => {
                 const reader = new FileReader();
 
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     const wrapper = document.createElement('div');
                     wrapper.classList.add('relative');
 
@@ -367,7 +377,7 @@
                     removeBtn.classList.add('absolute', 'top-1', 'right-1', 'bg-red-500', 'hover:bg-red-600',
                         'text-white', 'rounded-full', 'w-6', 'h-6', 'flex', 'items-center',
                         'justify-center', 'font-bold', 'text-lg', 'transition');
-                    removeBtn.onclick = function () {
+                    removeBtn.onclick = function() {
                         removeImage(index);
                     };
 
