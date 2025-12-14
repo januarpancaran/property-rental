@@ -49,10 +49,31 @@ class BookingController extends Controller
         if ($request->has('property_id')) {
             $property = Property::with(['photos', 'owner'])->findOrFail($request->property_id);
 
-            // Check if property is available
-            if ($property->status !== 'available') {
-                return redirect()->back()
-                    ->withErrors(['property' => 'This property is not available for booking.']);
+            // If check_in and check_out are provided, validate those dates instead of checking property status
+            if ($request->has('check_in') && $request->has('check_out')) {
+                // Validate dates
+                $validated = $request->validate([
+                    'check_in' => 'required|date|after_or_equal:today',
+                    'check_out' => 'required|date|after:check_in',
+                ]);
+
+                // Check for booking conflicts
+                $hasConflict = Booking::hasOverlappingBooking(
+                    $request->property_id,
+                    $validated['check_in'],
+                    $validated['check_out']
+                );
+
+                if ($hasConflict) {
+                    return redirect()->back()
+                        ->withErrors(['dates' => 'Selected dates are no longer available.']);
+                }
+            } else {
+                // Without dates, property must be available
+                if ($property->status !== 'available') {
+                    return redirect()->back()
+                        ->withErrors(['property' => 'This property is not available for booking.']);
+                }
             }
         }
 
@@ -72,13 +93,6 @@ class BookingController extends Controller
         ]);
 
         $property = Property::findOrFail($validated['property_id']);
-
-        // Check if property is available
-        if ($property->status !== 'available') {
-            return redirect()->back()
-                ->withErrors(['property' => 'This property is not available for booking.'])
-                ->withInput();
-        }
 
         // Check if user is trying to book their own property
         if ($property->user_id === Auth::id()) {
