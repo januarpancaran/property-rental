@@ -194,7 +194,8 @@
                                         @endif
                                         <div class="absolute top-2 left-2">
                                             @if ($property->status !== 'available' && $property->nextAvailableDate)
-                                                <span class="block text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-800 px-2 py-1 rounded mb-2">
+                                                <span
+                                                    class="block text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-800 px-2 py-1 rounded mb-2">
                                                     Available: {{ $property->nextAvailableDate }}
                                                 </span>
                                             @endif

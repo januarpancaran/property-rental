@@ -115,7 +115,8 @@
 
                             @if (request('check_in') && request('check_out'))
                                 <div class="text-sm text-indigo-600 dark:text-indigo-400 mb-4">
-                                    Available for {{ date('M d', strtotime(request('check_in'))) }} - {{ date('M d, Y', strtotime(request('check_out'))) }}
+                                    Available for {{ date('M d', strtotime(request('check_in'))) }} -
+                                    {{ date('M d, Y', strtotime(request('check_out'))) }}
                                 </div>
                             @endif
 
