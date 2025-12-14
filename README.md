@@ -21,6 +21,8 @@
 
 This is a comprehensive property rental platform that enables landlords and tenants to manage bookings, payments, contracts, and maintenance requests. The platform includes integrated payment processing, real-time notifications, and a user-friendly interface for property management.
 
+![megaphone](.github/images/PropertyRental.png)
+
 ## ✨ Features
 
 - **Property Management** - Create and manage properties with photos and details
