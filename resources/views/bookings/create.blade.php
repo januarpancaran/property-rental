@@ -9,22 +9,31 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
                 <a href="{{ $property ? route('properties.show', $property) : route('properties.index') }}"
-                    class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">
-                    ← Back
+                    class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back
                 </a>
             </div>
 
             @if ($property)
                 <!-- Property Info Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-6">
                     <div class="p-6">
                         <div class="flex gap-4">
                             <div class="w-32 h-32 flex-shrink-0">
                                 @if ($property->featuredPhoto)
                                     <img src="{{ $property->featuredPhoto->url }}" alt="{{ $property->title }}"
-                                        class="w-full h-full object-cover rounded">
+                                        class="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-gray-600">
                                 @else
-                                    <div class="w-full h-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                    <div
+                                        class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg flex items-center justify-center text-gray-400">
+                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                        </svg>
+                                    </div>
                                 @endif
                             </div>
                             <div>
@@ -34,7 +43,7 @@
                                 <p class="text-gray-600 dark:text-gray-400 mb-2">
                                     {{ $property->city }}, {{ $property->state }}
                                 </p>
-                                <p class="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                                     Rp {{ number_format($property->rent_amount, 0, ',', '.') }}/month
                                 </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -46,7 +55,7 @@
                 </div>
 
                 <!-- Booking Form -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                     <div class="p-6">
                         <form action="{{ route('bookings.store') }}" method="POST" id="bookingForm">
                             @csrf
@@ -58,7 +67,7 @@
                                     Check-in Date
                                 </label>
                                 <input type="date" name="check_in_date" id="check_in_date"
-                                    value="{{ old('check_in_date') }}" min="{{ date('Y-m-d') }}"
+                                    value="{{ old('check_in_date', request('check_in')) }}" min="{{ date('Y-m-d') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
                                 @error('check_in_date')
@@ -72,7 +81,8 @@
                                     Check-out Date
                                 </label>
                                 <input type="date" name="check_out_date" id="check_out_date"
-                                    value="{{ old('check_out_date') }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                    value="{{ old('check_out_date', request('check_out')) }}"
+                                    min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
                                 @error('check_out_date')
@@ -83,11 +93,20 @@
                                 @enderror
                             </div>
 
-                            <!-- Availability Check Result -->
-                            <div id="availabilityResult" class="mb-4 hidden">
-                                <div class="p-4 rounded-lg" id="availabilityCard">
-                                    <p class="font-semibold mb-2" id="availabilityMessage"></p>
-                                    <div id="priceBreakdown" class="text-sm space-y-1"></div>
+                            <!-- Price Calculation Display -->
+                            <div id="priceDisplay" class="mb-4 hidden">
+                                <div
+                                    class="p-4 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700">
+                                    <div class="text-sm space-y-1 text-indigo-800 dark:text-indigo-200">
+                                        <p>Number of Nights: <span id="nightsCount" class="font-semibold"></span></p>
+                                        <p>Daily Rate: <span id="dailyRate" class="font-semibold">Rp
+                                                {{ number_format($property->rent_amount / 30, 0, ',', '.') }}</span>
+                                        </p>
+                                        <p
+                                            class="text-lg font-bold pt-2 border-t border-indigo-200 dark:border-indigo-700">
+                                            Total Amount: <span id="totalAmount"></span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -106,16 +125,15 @@
 
                             <div class="flex items-center justify-end gap-3">
                                 <a href="{{ route('properties.show', $property) }}"
-                                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                    class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition">
                                     Cancel
                                 </a>
-                                <button type="button" id="checkAvailabilityBtn"
-                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                    Check Availability
-                                </button>
                                 <button type="submit" id="submitBtn"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                    disabled>
+                                    class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
                                     Book Now
                                 </button>
                             </div>
@@ -123,11 +141,15 @@
                     </div>
                 </div>
             @else
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                     <div class="p-6 text-center">
                         <p class="text-gray-500 dark:text-gray-400">Please select a property first.</p>
                         <a href="{{ route('properties.index') }}"
-                            class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
                             Browse Properties
                         </a>
                     </div>
@@ -138,78 +160,141 @@
 
     @if ($property)
         <script>
+            const propertyId = {{ $property->id }};
+            const rentAmount = {{ $property->rent_amount }};
+            const dailyRate = Math.round(rentAmount / 30);
+
             const checkInInput = document.getElementById('check_in_date');
             const checkOutInput = document.getElementById('check_out_date');
-            const checkBtn = document.getElementById('checkAvailabilityBtn');
             const submitBtn = document.getElementById('submitBtn');
-            const resultDiv = document.getElementById('availabilityResult');
-            const availabilityCard = document.getElementById('availabilityCard');
-            const availabilityMessage = document.getElementById('availabilityMessage');
-            const priceBreakdown = document.getElementById('priceBreakdown');
+            const priceDisplay = document.getElementById('priceDisplay');
+            const nightsCount = document.getElementById('nightsCount');
+            const totalAmount = document.getElementById('totalAmount');
 
-            checkBtn.addEventListener('click', function() {
+            let blockedDates = [];
+            let isLoadingDates = false;
+
+            // Fetch blocked dates for the property
+            async function fetchBlockedDates() {
+                if (isLoadingDates) return;
+                isLoadingDates = true;
+
+                try {
+                    const response = await fetch(`/api/properties/${propertyId}/blocked-dates`);
+                    const data = await response.json();
+                    blockedDates = data.blocked_dates || [];
+
+                    // Disable already selected dates if they're blocked
+                    validateDates();
+                } catch (error) {
+                    console.error('Error fetching blocked dates:', error);
+                } finally {
+                    isLoadingDates = false;
+                }
+            }
+
+            // Check if a date is blocked
+            function isDateBlocked(dateString) {
+                return blockedDates.includes(dateString);
+            }
+
+            // Check if date range has any blocked dates
+            function hasBlockedDatesInRange(startDate, endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const current = new Date(start);
+
+                while (current < end) {
+                    const dateStr = current.toISOString().split('T')[0];
+                    if (isDateBlocked(dateStr)) {
+                        return true;
+                    }
+                    current.setDate(current.getDate() + 1);
+                }
+                return false;
+            }
+
+            // Calculate nights and total price
+            function calculatePrice() {
                 const checkIn = checkInInput.value;
                 const checkOut = checkOutInput.value;
 
                 if (!checkIn || !checkOut) {
-                    alert('Please select both check-in and check-out dates');
+                    priceDisplay.classList.add('hidden');
                     return;
                 }
 
-                fetch('{{ route('bookings.check-availability') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            property_id: {{ $property->id }},
-                            check_in_date: checkIn,
-                            check_out_date: checkOut
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        resultDiv.classList.remove('hidden');
-                        availabilityMessage.textContent = data.message;
+                const start = new Date(checkIn);
+                const end = new Date(checkOut);
+                const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
 
-                        if (data.available) {
-                            availabilityCard.className =
-                                'p-4 rounded-lg bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700';
-                            availabilityMessage.className = 'font-semibold mb-2 text-green-800 dark:text-green-200';
-                            priceBreakdown.innerHTML = `
-                        <p class="text-green-700 dark:text-green-300">Nights: ${data.nights}</p>
-                        <p class="text-green-700 dark:text-green-300">Daily Rate: Rp ${data.daily_rate.toLocaleString('id-ID')}</p>
-                        <p class="text-green-700 dark:text-green-300 font-bold text-lg">Total: ${data.formatted_total}</p>
-                    `;
-                            submitBtn.disabled = false;
-                        } else {
-                            availabilityCard.className =
-                                'p-4 rounded-lg bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700';
-                            availabilityMessage.className = 'font-semibold mb-2 text-red-800 dark:text-red-200';
-                            priceBreakdown.innerHTML = '';
-                            submitBtn.disabled = true;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Error checking availability');
-                    });
-            });
+                if (nights > 0) {
+                    const total = nights * dailyRate;
+                    nightsCount.textContent = nights;
+                    totalAmount.textContent = 'Rp ' + total.toLocaleString('id-ID');
+                    priceDisplay.classList.remove('hidden');
+                } else {
+                    priceDisplay.classList.add('hidden');
+                }
+            }
+
+            // Validate selected dates
+            function validateDates() {
+                const checkIn = checkInInput.value;
+                const checkOut = checkOutInput.value;
+
+                if (!checkIn || !checkOut) {
+                    submitBtn.disabled = true;
+                    return;
+                }
+
+                // Check if any date in the range is blocked
+                if (hasBlockedDatesInRange(checkIn, checkOut)) {
+                    submitBtn.disabled = true;
+                    alert('Selected dates are not available. Please choose different dates.');
+                    return;
+                }
+
+                submitBtn.disabled = false;
+                calculatePrice();
+            }
 
             // Update min date for check-out when check-in changes
             checkInInput.addEventListener('change', function() {
                 const checkInDate = new Date(this.value);
                 checkInDate.setDate(checkInDate.getDate() + 1);
                 checkOutInput.min = checkInDate.toISOString().split('T')[0];
-                submitBtn.disabled = true;
-                resultDiv.classList.add('hidden');
+
+                if (checkOutInput.value && new Date(checkOutInput.value) <= new Date(this.value)) {
+                    checkOutInput.value = '';
+                }
+
+                validateDates();
             });
 
             checkOutInput.addEventListener('change', function() {
-                submitBtn.disabled = true;
-                resultDiv.classList.add('hidden');
+                validateDates();
+            });
+
+            // Add custom validation for date picker (disable blocked dates)
+            function addDateValidation() {
+                [checkInInput, checkOutInput].forEach(input => {
+                    input.addEventListener('input', function(e) {
+                        const selectedDate = e.target.value;
+                        if (selectedDate && isDateBlocked(selectedDate)) {
+                            e.target.value = '';
+                            alert('This date is not available. Please select another date.');
+                        }
+                    });
+                });
+            }
+
+            // Initialize
+            fetchBlockedDates().then(() => {
+                addDateValidation();
+                if (checkInInput.value && checkOutInput.value) {
+                    validateDates();
+                }
             });
         </script>
     @endif
